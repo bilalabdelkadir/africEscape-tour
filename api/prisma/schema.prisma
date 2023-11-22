@@ -12,19 +12,19 @@ datasource db {
 
 // create an account model that can be used by user, staff and company table to store account information
 model Account {
-  id             String       @id @default(uuid())
-  email          String       @unique
+  id             String         @id @default(uuid())
+  email          String         @unique
   hashedPassword String?
-  resetToken     RefreshToken @relation(fields: [refreshTokenId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  refreshTokenId String
+  refreshTokens  RefreshTokens? @relation(fields: [refreshTokenId], references: [id])
+  refreshTokenId String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   Tourist        Tourist[]
 
   @@map("account")
 }
 
-model RefreshToken {
+model RefreshTokens {
   id              String    @id @default(uuid())
   hashedToken     String
   expiresAt       DateTime
@@ -35,7 +35,7 @@ model RefreshToken {
   updatedAt       DateTime  @updatedAt
   Account         Account[]
 
-  @@map("refresh_token")
+  @@map("refresh_tokens")
 }
 
 model Tourist {
