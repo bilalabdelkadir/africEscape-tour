@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// create an account model that can be used by user, staff and company table to store account information
+model Account {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  hashedPassword String?
+  resetToken     RefreshToken @relation(fields: [refreshTokenId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  refreshTokenId String
+  Tourist        Tourist[]
+
+  @@map("account")
+}
+
+model RefreshToken {
+  id              String    @id @default(uuid())
+  hashedToken     String
+  expiresAt       DateTime
+  operatingSystem String?
+  browser         String?
+  ipAddress       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  Account         Account[]
+
+  @@map("refresh_token")
+}
+
+model Tourist {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Account   Account  @relation(fields: [accountId], references: [id])
+  accountId String
+
+  @@map("tourist")
+}
