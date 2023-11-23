@@ -25,15 +25,16 @@ model Account {
 }
 
 model RefreshTokens {
-  id              String    @id @default(uuid())
-  hashedToken     String
-  expiresAt       DateTime
-  operatingSystem String?
-  browser         String?
-  ipAddress       String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  Account         Account[]
+  id                     String    @id @default(uuid())
+  hashedToken            String
+  expiresAt              DateTime
+  operatingSystem        String?
+  browser                String?
+  ipAddress              String?
+  refreshTokenIdentifier String    @unique
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  Account                Account[]
 
   @@map("refresh_tokens")
 }
