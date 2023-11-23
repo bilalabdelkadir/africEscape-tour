@@ -32,7 +32,6 @@ model RefreshTokens {
   browser                String?
   device                 String?
   agent                  String?
-  brand                  String?
   refreshTokenIdentifier String    @unique
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt

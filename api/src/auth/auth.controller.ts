@@ -10,6 +10,8 @@ import {
   NotFoundException,
   Req,
   Logger,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -20,7 +22,9 @@ import {
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import * as DeviceDetector from 'device-detector-js';
-import { Request } from 'express';
+import { Request, response } from 'express';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { AccessTokenGuard } from './guards/access-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -51,12 +55,38 @@ export class AuthController {
   async signInTourist(
     @Body() signinTouristDto: SigninTouristDto,
     @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res = response,
   ) {
-    return await this.authService.signInTourist(signinTouristDto, req);
+    const response = await this.authService.signInTourist(
+      signinTouristDto,
+      req,
+    );
+    res.cookie('refresh-token', response.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    });
+
+    res.cookie('access-token', response.accessToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1000 * 60 * 15),
+    });
+
+    return response;
+  }
+
+  @Get('me')
+  @UseGuards(AccessTokenGuard)
+  getMe(@Req() req: Request) {
+    return 'Hello';
   }
 
   @Post('user-agent-test')
-  async userAgentTest(@Req() req) {
+  async userAgentTest(@Req() req: Request) {
     try {
       const userAgent = req.headers['user-agent'];
 

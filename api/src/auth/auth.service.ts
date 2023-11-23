@@ -48,7 +48,10 @@ export class AuthService {
     }
   }
 
-  async signInTourist(signinTouristDto: SigninTouristDto, req: Request) {
+  async signInTourist(
+    signinTouristDto: SigninTouristDto,
+    req: Request,
+  ): Promise<{ message: string; accessToken: string; refreshToken: string }> {
     try {
       const userExists = await this.usersService.findAccountByEmail(
         signinTouristDto.email,
@@ -74,6 +77,10 @@ export class AuthService {
           userExists.email,
         );
 
+      if (accessToken === undefined || refreshToken === undefined) {
+        throw new HttpException('Failed to autheticate', 500);
+      }
+
       const hasedRefreshToken = await this.hashingService.hash(refreshToken);
 
       const userRequestInfo = this.parseUserAgent(req.headers['user-agent']);
@@ -83,7 +90,7 @@ export class AuthService {
         new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
       );
 
-      const newRefreshToken = await this.usersService.createRefreshToken(
+      await this.usersService.createRefreshToken(
         userExists.id,
         refreshTokenIdentifier,
         hasedRefreshToken,
@@ -91,7 +98,6 @@ export class AuthService {
         userRequestInfo.operatingSystem,
         userRequestInfo.browser,
         userRequestInfo.device,
-        userRequestInfo.brand,
         userRequestInfo.agent,
       );
 
@@ -106,26 +112,28 @@ export class AuthService {
     }
   }
 
-  // user agent parser
   private parseUserAgent(userAgent: string): {
     operatingSystem: string;
     browser: string;
     device: string;
-    brand: string;
     agent: string;
   } {
-    const operatingSystem = this.deviceDetector.parse(userAgent).os.name;
-    const browser = this.deviceDetector.parse(userAgent).client.name;
-    const device = this.deviceDetector.parse(userAgent).device.type;
-    const brand = this.deviceDetector.parse(userAgent).device.brand;
+    const operatingSystem = this.deviceDetector.parse(userAgent)?.os?.name
+      ? this.deviceDetector.parse(userAgent)?.os?.name
+      : 'postman';
+    const browser = this.deviceDetector.parse(userAgent)?.client?.name
+      ? this.deviceDetector.parse(userAgent)?.client?.name
+      : 'postman';
+    const device = this.deviceDetector.parse(userAgent)?.device?.type
+      ? this.deviceDetector.parse(userAgent)?.device?.type
+      : 'postman';
 
-    const agent = userAgent;
+    const agent = userAgent?.length > 0 ? userAgent : 'postman';
 
     return {
       operatingSystem,
       browser,
       device,
-      brand,
       agent,
     };
   }
