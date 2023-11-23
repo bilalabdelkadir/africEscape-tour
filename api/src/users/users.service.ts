@@ -67,7 +67,6 @@ export class UsersService {
     operatingSystem?: string,
     browser?: string,
     device?: string,
-    brand?: string,
     agent?: string,
   ) {
     return await this.prisma.refreshTokens.create({
@@ -79,7 +78,6 @@ export class UsersService {
         operatingSystem,
         browser,
         device,
-        brand,
         Account: {
           connect: {
             id,
