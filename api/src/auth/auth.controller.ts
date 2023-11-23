@@ -7,11 +7,20 @@ import {
   Param,
   Delete,
   ConflictException,
+  NotFoundException,
+  Req,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, SignupTouristDto } from './dto/create-auth.dto';
+import {
+  CreateAuthDto,
+  SigninTouristDto,
+  SignupTouristDto,
+} from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
+import * as DeviceDetector from 'device-detector-js';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -19,6 +28,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
+  private readonly deviceDetector = new DeviceDetector();
 
   @Post('sign-up/tourist')
   async createTourist(@Body() signupTouristDto: SignupTouristDto) {
@@ -35,5 +45,31 @@ export class AuthController {
 
       return await this.authService.create(signupTouristDto);
     } catch (err) {}
+  }
+
+  @Post('sign-in/tourist')
+  async signInTourist(
+    @Body() signinTouristDto: SigninTouristDto,
+    @Req() req: Request,
+  ) {
+    return await this.authService.signInTourist(signinTouristDto, req);
+  }
+
+  @Post('user-agent-test')
+  async userAgentTest(@Req() req) {
+    try {
+      const userAgent = req.headers['user-agent'];
+
+      const device = this.deviceDetector.parse(userAgent);
+      Logger.log(device);
+
+      return {
+        userAgent,
+        device,
+      };
+    } catch (err) {
+      Logger.error(err);
+      throw err;
+    }
   }
 }

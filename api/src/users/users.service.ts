@@ -58,4 +58,34 @@ export class UsersService {
       },
     });
   }
+
+  async createRefreshToken(
+    id: string,
+    refreshTokenIdentifier: string,
+    hasedRefreshToken: string,
+    expiresAt: Date,
+    operatingSystem?: string,
+    browser?: string,
+    device?: string,
+    brand?: string,
+    agent?: string,
+  ) {
+    return await this.prisma.refreshTokens.create({
+      data: {
+        expiresAt,
+        refreshTokenIdentifier,
+        hashedToken: hasedRefreshToken,
+        agent,
+        operatingSystem,
+        browser,
+        device,
+        brand,
+        Account: {
+          connect: {
+            id,
+          },
+        },
+      },
+    });
+  }
 }
