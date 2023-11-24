@@ -3,27 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   ConflictException,
-  NotFoundException,
   Req,
   Logger,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  CreateAuthDto,
-  SigninTouristDto,
-  SignupTouristDto,
-} from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SigninTouristDto, SignupTouristDto } from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import * as DeviceDetector from 'device-detector-js';
 import { Request, response } from 'express';
-import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
