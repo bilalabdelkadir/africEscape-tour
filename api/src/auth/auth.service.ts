@@ -5,14 +5,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  CreateAuthDto,
-  SigninTouristDto,
-  SignupTouristDto,
-} from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SigninTouristDto, SignupTouristDto } from './dto/create-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 import { HashingService } from './hashing/hashing.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtGeneratorService } from './jwt/jwt.service';
