@@ -6,8 +6,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './utils/logger.middleware';
-import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from './mail/mail.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { MailModule } from './mail/mail.module';
     }),
     AuthModule,
     MailModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
