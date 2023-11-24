@@ -25,6 +25,7 @@ import * as DeviceDetector from 'device-detector-js';
 import { Request, response } from 'express';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { AccessTokenGuard } from './guards/access-token.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -82,7 +83,33 @@ export class AuthController {
   @Get('me')
   @UseGuards(AccessTokenGuard)
   getMe(@Req() req: Request) {
+    console.log(req['user']);
     return 'Hello';
+  }
+
+  @Post('refresh-token')
+  @UseGuards(RefreshTokenGuard)
+  async refreshToken(
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res = response,
+  ) {
+    const response = await this.authService.refreshTokenTest(req);
+    res.cookie('refresh-token', response.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    });
+
+    res.cookie('access-token', response.accessToken, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 1000 * 60 * 15),
+    });
+
+    return response;
   }
 
   @Post('user-agent-test')

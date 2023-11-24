@@ -137,4 +137,87 @@ export class AuthService {
       agent,
     };
   }
+
+  async refreshTokenTest(req: Request) {
+    try {
+      const userAgent = req.headers['user-agent'];
+      const user = req['user'];
+
+      const refreshToken = await this.Prisma.refreshTokens.findFirst({
+        where: {
+          refreshTokenIdentifier: user.refreshTokenIdentifier,
+        },
+      });
+
+      // then we compare check if the operation system, browser, device and agent are the same
+      if (
+        refreshToken.operatingSystem !==
+          this.parseUserAgent(userAgent).operatingSystem ||
+        refreshToken.browser !== this.parseUserAgent(userAgent).browser ||
+        refreshToken.device !== this.parseUserAgent(userAgent).device ||
+        refreshToken.agent !== this.parseUserAgent(userAgent).agent
+      ) {
+        throw new UnauthorizedException('Invalid device');
+      }
+
+      if (new Date() > refreshToken.expiresAt) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      Logger.log('hased refresh', refreshToken.hashedToken);
+      Logger.log('unhshed', user.refreshToken);
+
+      // then we check if the refresh token is valid
+      const isValid = await this.hashingService.compareHash(
+        user.refreshToken,
+        refreshToken.hashedToken,
+      );
+
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      // then we delete the old refresh token
+      await this.Prisma.refreshTokens.delete({
+        where: {
+          id: refreshToken.id,
+        },
+      });
+
+      // then we generate a new access token and refresh token
+      const {
+        accessToken,
+        refreshToken: newRefreshToken,
+        refreshTokenIdentifier,
+      } = await this.jwtGeneratorService.generateBothTokens(
+        user.id,
+        user.email,
+      );
+
+      // then we hash the new refresh token
+      const hashedRefreshToken =
+        await this.hashingService.hash(newRefreshToken);
+
+      // then we save the new refresh token
+      await this.usersService.createRefreshToken(
+        user.id,
+        refreshTokenIdentifier,
+        hashedRefreshToken,
+        new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+        this.parseUserAgent(userAgent).operatingSystem,
+        this.parseUserAgent(userAgent).browser,
+        this.parseUserAgent(userAgent).device,
+        this.parseUserAgent(userAgent).agent,
+      );
+
+      // then we send the new access token and refresh token
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (err) {
+      Logger.error(err);
+      throw err;
+    }
+  }
 }
