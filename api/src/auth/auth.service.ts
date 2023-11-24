@@ -220,4 +220,18 @@ export class AuthService {
       throw err;
     }
   }
+
+  async signout(req: Request) {
+    const refreshTokenIdentifier = req['user'].refreshTokenIdentifier;
+
+    await this.Prisma.refreshTokens.deleteMany({
+      where: {
+        refreshTokenIdentifier,
+      },
+    });
+
+    return {
+      message: 'Signed out successfully',
+    };
+  }
 }
