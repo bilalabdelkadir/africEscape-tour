@@ -87,6 +87,23 @@ export class AuthController {
     return 'Hello';
   }
 
+  @Post('sign-out')
+  @UseGuards(AccessTokenGuard)
+  async signOut(
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res = response,
+  ) {
+    console.log(req['user']);
+
+    res.clearCookie('refresh-token');
+    res.clearCookie('access-token');
+    const response = await this.authService.signout(req);
+    return response;
+  }
+
   @Post('refresh-token')
   @UseGuards(RefreshTokenGuard)
   async refreshToken(
