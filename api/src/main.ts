@@ -57,7 +57,6 @@ async function bootstrap() {
           );
           return accumulator;
         }, {});
-        console.log('formattedErrors123', formattedErrors);
         throw new BadRequestException(formattedErrors);
       },
     }),
