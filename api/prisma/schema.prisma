@@ -12,14 +12,16 @@ datasource db {
 
 // create an account model that can be used by user, staff and company table to store account information
 model Account {
-  id             String         @id @default(uuid())
-  email          String         @unique
-  hashedPassword String?
-  refreshTokens  RefreshTokens? @relation(fields: [refreshTokenId], references: [id])
-  refreshTokenId String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  Tourist        Tourist[]
+  id              String         @id @default(uuid())
+  email           String         @unique
+  hashedPassword  String?
+  isEmailVerified Boolean        @default(false)
+  refreshTokens   RefreshTokens? @relation(fields: [refreshTokenId], references: [id])
+  refreshTokenId  String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  Tourist         Tourist[]
+  Agency          Agency[]
 
   @@map("account")
 }
@@ -52,4 +54,28 @@ model Tourist {
   accountId String
 
   @@map("tourist")
+}
+
+enum StatusType {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Agency {
+  id           String     @id @default(uuid())
+  agencyName   String
+  email        String     @unique
+  phoneNumber  String     @unique
+  agencyAvatar String?
+  country      String
+  city         String
+  address      String?
+  status       StatusType @default(APPROVED)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  Account      Account    @relation(fields: [accountId], references: [id])
+  accountId    String
+
+  @@map("tour_company")
 }
