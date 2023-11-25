@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { MailModule } from './mail/mail.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { AgencyModule } from './agency/agency.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
     AuthModule,
     MailModule,
     FileUploadModule,
+    AgencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

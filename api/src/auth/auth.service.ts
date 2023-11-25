@@ -5,13 +5,18 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SigninTouristDto, SignupTouristDto } from './dto/create-auth.dto';
+import {
+  SigninTouristDto,
+  SignupAgencyDto,
+  SignupTouristDto,
+} from './dto/create-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HashingService } from './hashing/hashing.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtGeneratorService } from './jwt/jwt.service';
 import { Request } from 'express';
 import * as DeviceDetector from 'device-detector-js';
+import { AgencyService } from 'src/agency/agency.service';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +25,12 @@ export class AuthService {
     private readonly hashingService: HashingService,
     private readonly usersService: UsersService,
     private readonly jwtGeneratorService: JwtGeneratorService,
+    private readonly agencyService: AgencyService,
   ) {}
 
   private readonly deviceDetector = new DeviceDetector();
 
-  async create(signupTouristDto: SignupTouristDto) {
+  async RegisterTouristAccount(signupTouristDto: SignupTouristDto) {
     try {
       const hashedPassword = await this.hashingService.hash(
         signupTouristDto.password,
@@ -37,6 +43,27 @@ export class AuthService {
       );
 
       return newUser;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async RegisterAgencyAccount(signupAgencyDto: SignupAgencyDto) {
+    try {
+      const hashedPassword = await this.hashingService.hash(
+        signupAgencyDto.password,
+      );
+      const newAgency = await this.agencyService.create({
+        email: signupAgencyDto.email,
+        password: hashedPassword,
+        agencyName: signupAgencyDto.agencyName,
+        phoneNumber: signupAgencyDto.phoneNumber,
+        address: signupAgencyDto.address,
+        city: signupAgencyDto.city,
+        country: signupAgencyDto.country,
+      });
+
+      return newAgency;
     } catch (err) {
       throw err;
     }
@@ -227,5 +254,25 @@ export class AuthService {
     return {
       message: 'Signed out successfully',
     };
+  }
+
+  async me(req: Request) {
+    try {
+      const user = req['user'];
+
+      const userExists = await this.usersService.findAccountByEmail(user.email);
+
+      if (!userExists) {
+        throw new NotFoundException('User not found');
+      }
+
+      return {
+        message: 'User found',
+        user: userExists,
+      };
+    } catch (err) {
+      Logger.error(err);
+      throw err;
+    }
   }
 }
