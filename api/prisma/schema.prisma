@@ -10,7 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// create an account model that can be used by user, staff and company table to store account information
+enum AccountType {
+  TOURIST
+  AGENCY
+}
+
 model Account {
   id              String         @id @default(uuid())
   email           String         @unique
@@ -20,6 +24,7 @@ model Account {
   refreshTokenId  String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  accountType     AccountType    @default(TOURIST)
   Tourist         Tourist[]
   Agency          Agency[]
 
