@@ -10,18 +10,24 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SigninTouristDto, SignupTouristDto } from './dto/create-auth.dto';
+import {
+  SigninTouristDto,
+  SignupAgencyDto,
+  SignupTouristDto,
+} from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import * as DeviceDetector from 'device-detector-js';
 import { Request, response } from 'express';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { AgencyService } from 'src/agency/agency.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly agencyService: AgencyService,
   ) {}
   private readonly deviceDetector = new DeviceDetector();
 
@@ -38,7 +44,24 @@ export class AuthController {
         );
       }
 
-      return await this.authService.create(signupTouristDto);
+      return await this.authService.RegisterTouristAccount(signupTouristDto);
+    } catch (err) {}
+  }
+
+  @Post('sign-up/agency')
+  async createAgency(@Body() signupAgencyDto: SignupAgencyDto) {
+    try {
+      const userExists = await this.usersService.findAccountByEmail(
+        signupAgencyDto.email,
+      );
+
+      if (userExists) {
+        throw new ConflictException(
+          'An account with this email already exists',
+        );
+      }
+
+      return await this.authService.RegisterAgencyAccount(signupAgencyDto);
     } catch (err) {}
   }
 
@@ -72,9 +95,8 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AccessTokenGuard)
-  getMe(@Req() req: Request) {
-    console.log(req['user']);
-    return 'Hello';
+  async getMe(@Req() req: Request) {
+    return this.authService.me(req);
   }
 
   @Post('sign-out')
