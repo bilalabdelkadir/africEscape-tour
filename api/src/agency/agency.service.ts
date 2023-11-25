@@ -11,6 +11,7 @@ export class AgencyService {
       data: {
         email: createAgencyDto.email,
         hashedPassword: createAgencyDto.password,
+        accountType: 'AGENCY',
         Agency: {
           create: {
             agencyName: createAgencyDto.agencyName,
