@@ -35,7 +35,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-green-100 bg-opacity-20 mx-2 rounded-b-3xl backdrop-blur-sm shadow-xl sticky z-50 top-0 inset-x-0 h-16 mb-4">
+    <nav className="bg-white bg-opacity-20 mx-2 rounded-b-3xl backdrop-blur-sm shadow-xl sticky z-50 top-0 inset-x-0 h-16 mb-4">
       <MaxWidthWrapper>
         <header className="border-b border-gray-200">
           <div className="flex items-center justify-between h-16">
@@ -81,7 +81,7 @@ const Navbar = () => {
                 className={buttonVariants({
                   variant: 'default',
                   className:
-                    'rounded-full py-0 px-5 text-gray-200 font-semibold  bg-gradient-to-r from-teal-800 to-green-600',
+                    'rounded-full py-0 px-5 text-gray-200 font-semibold  bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
                 })}
               >
                 Register
@@ -135,7 +135,7 @@ const Navbar = () => {
                     className={buttonVariants({
                       variant: 'default',
                       className:
-                        'rounded-full w-[80%] py-0 px-5 text-gray-200 font-semibold bg-gradient-to-r from-teal-800 to-green-600',
+                        'rounded-full w-[80%] py-0 px-5 text-gray-200 font-semibold bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
                     })}
                   >
                     Register
