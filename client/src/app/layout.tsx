@@ -1,10 +1,17 @@
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+import { Jost, Fredoka } from 'next/font/google';
 import './globals.css';
+import Navbar from '@/components/Navbar';
 
-const roboto = Roboto({
+const jost = Jost({
   weight: ['400', '700'],
   subsets: ['latin-ext'],
+  variable: '--font-jost',
+});
+
+const fredoka = Fredoka({
+  subsets: ['latin-ext'],
+  variable: '--font-fredoka',
 });
 
 export const metadata: Metadata = {
@@ -19,7 +26,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={roboto.className}>
+      <body className={`${jost.variable} ${fredoka.variable}`}>
+        <Navbar />
         <main className="relative flex flex-col min-h-screen">{children}</main>
       </body>
     </html>

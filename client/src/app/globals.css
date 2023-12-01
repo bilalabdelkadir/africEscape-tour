@@ -6,6 +6,14 @@ body {
   background: #f1f5f6;
 }
 
+.font-fodrika {
+  font-family: var(--font-fredoka);
+}
+
+.font-jost {
+  font-family: var(--font-jost);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
