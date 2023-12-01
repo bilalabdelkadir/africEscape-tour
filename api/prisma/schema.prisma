@@ -13,22 +13,31 @@ datasource db {
 enum AccountType {
   TOURIST
   AGENCY
+  AGENCY_EMPLOYEE
+}
+
+enum EmployeeRole {
+  GUIDE
+  LEAD_GUIDE
+  DRIVER
+  INTERPRETER
 }
 
 model Account {
-  id              String         @id @default(uuid())
-  email           String         @unique
+  id              String           @id @default(uuid())
+  email           String           @unique
   hashedPassword  String?
-  isEmailVerified Boolean        @default(false)
-  refreshTokens   RefreshTokens? @relation(fields: [refreshTokenId], references: [id])
+  isEmailVerified Boolean          @default(false)
+  refreshTokens   RefreshTokens?   @relation(fields: [refreshTokenId], references: [id])
   refreshTokenId  String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  accountType     AccountType    @default(TOURIST)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  accountType     AccountType      @default(TOURIST)
   Tourist         Tourist[]
   Agency          Agency[]
+  AgencyEmployee  AgencyEmployee[]
 
-  @@map("account")
+  @@map("accounts")
 }
 
 model RefreshTokens {
@@ -57,6 +66,8 @@ model Tourist {
   updatedAt DateTime @updatedAt
   Account   Account  @relation(fields: [accountId], references: [id])
   accountId String
+  Tour      Tour?    @relation(fields: [tourId], references: [id])
+  tourId    String?
 
   @@map("tourist")
 }
@@ -68,19 +79,116 @@ enum StatusType {
 }
 
 model Agency {
-  id           String     @id @default(uuid())
-  agencyName   String
-  email        String     @unique
-  phoneNumber  String     @unique
-  agencyAvatar String?
-  country      String
-  city         String
-  address      String?
-  status       StatusType @default(APPROVED)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  Account      Account    @relation(fields: [accountId], references: [id])
-  accountId    String
+  id             String           @id @default(uuid())
+  agencyName     String
+  email          String           @unique
+  phoneNumber    String           @unique
+  agencyAvatar   String?
+  country        String
+  city           String
+  address        String?
+  status         StatusType       @default(APPROVED)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Account        Account          @relation(fields: [accountId], references: [id])
+  accountId      String
+  Tour           Tour[]
+  AgencyEmployee AgencyEmployee[]
 
-  @@map("tour_company")
+  @@map("tour_companies")
+}
+
+model AgencyEmployee {
+  id            String       @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String       @unique
+  phoneNumber   String       @unique
+  avatar        String?
+  role          EmployeeRole @default(GUIDE)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  Agency        Agency       @relation(fields: [agencyId], references: [id])
+  agencyId      String
+  Account       Account      @relation(fields: [accountId], references: [id])
+  accountId     String
+  TourLeadGuide Tour?        @relation(fields: [tourId], references: [id])
+  tourId        String?
+  TourGuide     Tour[]       @relation("lead-guide")
+
+  @@map("tour_company_employees")
+}
+
+enum TourPublishStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+enum TourStatus {
+  CANCELLED
+  FINISHED
+  UPCOMING
+}
+
+model Tour {
+  id          String            @id @default(uuid())
+  title       String
+  content     String            @db.Text
+  price       Float
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Agency      Agency            @relation(fields: [agencyId], references: [id])
+  agencyId    String
+  slug        String            @unique
+  TourImage   TourImage[]
+  guides      AgencyEmployee[]
+  tourists    Tourist[]
+  leadGuide   AgencyEmployee?   @relation("lead-guide", fields: [leadGuideId], references: [id])
+  leadGuideId String?
+  startDate   DateTime
+  endDate     DateTime
+  duration    String?
+  tags        Tags[]
+  TourService TourService[]
+  postStatus  TourPublishStatus @default(DRAFT)
+  status      TourStatus        @default(UPCOMING)
+
+  @@map("tours")
+}
+
+model TourService {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  isProvided Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Tour       Tour?    @relation(fields: [tourId], references: [id])
+  tourId     String?
+
+  @@map("tour_services")
+}
+
+model Tags {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tour      Tour?    @relation(fields: [tourId], references: [id])
+  tourId    String?
+
+  @@map("tags")
+}
+
+model TourImage {
+  id        String   @id @default(uuid())
+  url       String
+  alt       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Tour      Tour     @relation(fields: [tourId], references: [id])
+  tourId    String
+
+  @@map("tour_images")
 }
