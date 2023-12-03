@@ -73,6 +73,7 @@ const Navbar = () => {
                   variant: 'outline',
                   className: 'rounded-full py-1 px-5 font-semibold',
                 })}
+                onClick={() => handleMenuItemClick('login')}
               >
                 Login
               </Link>
@@ -83,6 +84,7 @@ const Navbar = () => {
                   className:
                     'rounded-full py-0 px-5 text-gray-200 font-semibold  bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
                 })}
+                onClick={() => handleMenuItemClick('signup')}
               >
                 Register
               </Link>
