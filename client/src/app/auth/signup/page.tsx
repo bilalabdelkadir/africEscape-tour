@@ -7,27 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
 import { endpoints } from '@/lib/endpoints';
+import { useMutate } from '@/lib/customHook';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
-const validationSchema = z
+const SingupSchema = z
   .object({
     firstName: z.string().min(1, { message: 'Firstname is required' }),
     lastName: z.string().min(1, { message: 'Lastname is required' }),
@@ -46,13 +44,13 @@ const validationSchema = z
     message: "Password don't match",
   });
 
-type IValidationSchema = z.infer<typeof validationSchema>;
+type ISignupSchema = z.infer<typeof SingupSchema>;
 
 const page = () => {
+  const { toast } = useToast();
   const { signupTourist } = endpoints;
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const form = useForm<IValidationSchema>({
-    resolver: zodResolver(validationSchema),
+  const form = useForm<ISignupSchema>({
+    resolver: zodResolver(SingupSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -62,12 +60,32 @@ const page = () => {
     },
   });
 
-  function onSubmit(values: IValidationSchema) {
-    setIsLoading(true);
-    console.log(values);
-  }
+  const router = useRouter();
 
-  console.log(form.watch());
+  const { mutate, isPending } = useMutate(
+    signupTourist,
+    'post',
+    (error) => {
+      console.log('error', error);
+      toast({
+        variant: 'destructive',
+        description: error.response?.data?.message | error.response?.data,
+      });
+    },
+    (data) => {
+      form.reset(),
+        console.log(data),
+        toast({
+          variant: 'default',
+          title: 'Account Created',
+        }),
+        router.push('/auth/login');
+    }
+  );
+
+  function onSubmit(values: ISignupSchema) {
+    mutate(values);
+  }
 
   return (
     <div className="flex justify-center items-center font-jost">
@@ -154,9 +172,9 @@ const page = () => {
                 type="submit"
                 className="rounded-3xl w-full mx-auto"
                 size={'lg'}
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading && (
+                {isPending && (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 Sign up
