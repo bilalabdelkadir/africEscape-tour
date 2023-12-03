@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -45,6 +46,11 @@ async function bootstrap() {
   }
 
   app.use(cookieParser());
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    Logger.log(`${req.method} ${req.url}`);
+    next();
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
