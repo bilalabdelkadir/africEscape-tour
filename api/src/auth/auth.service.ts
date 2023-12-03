@@ -72,7 +72,12 @@ export class AuthService {
   async signInTourist(
     signinTouristDto: SigninTouristDto,
     req: Request,
-  ): Promise<{ message: string; accessToken: string; refreshToken: string }> {
+  ): Promise<{
+    message: string;
+    accessToken: string;
+    refreshToken: string;
+    user: any;
+  }> {
     try {
       const userExists = await this.usersService.findAccountByEmail(
         signinTouristDto.email,
@@ -126,6 +131,7 @@ export class AuthService {
         message: 'Successfully signed in',
         accessToken,
         refreshToken,
+        user: userExists,
       };
     } catch (err) {
       Logger.error(err);

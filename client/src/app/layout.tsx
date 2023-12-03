@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Jost, Fredoka } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import { Suspense } from 'react';
 
 const jost = Jost({
   weight: ['400', '700'],
