@@ -84,13 +84,11 @@ export class AuthController {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     });
 
-    res.cookie('access-token', response.accessToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1000 * 60 * 15),
-    });
+    const { refreshToken, ...finalResponse } = response;
 
-    return response;
+    return {
+      ...finalResponse,
+    };
   }
 
   @Get('me')
@@ -111,7 +109,6 @@ export class AuthController {
     console.log(req['user']);
 
     res.clearCookie('refresh-token');
-    res.clearCookie('access-token');
     const response = await this.authService.signout(req);
     return response;
   }

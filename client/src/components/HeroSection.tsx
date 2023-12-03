@@ -25,13 +25,13 @@ const HeroSection = () => {
       >
         <h1
           className="text-4xl md:text-7xl text-center font-semibold
-          font-jost text-white"
+          font-jost text-white  leading-10"
         >
           Discover The Most Beautiful Places In Africa With Us
         </h1>
         <p
           className="text-sm md:text-lg text-center font-medium
-          font-jost text-white my-5 shadow-2xl "
+          font-jost text-white my-5 shadow-2xl"
         >
           We are committed to providing you with the best experience
         </p>
