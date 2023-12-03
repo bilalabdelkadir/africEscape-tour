@@ -68,7 +68,7 @@ const Navbar = () => {
             </div>
             <div className="md:flex hidden items-center space-x-2 ">
               <Link
-                href="/login"
+                href="/auth/login"
                 className={buttonVariants({
                   variant: 'outline',
                   className: 'rounded-full py-1 px-5 font-semibold',
@@ -77,7 +77,7 @@ const Navbar = () => {
                 Login
               </Link>
               <Link
-                href="/register"
+                href="/auth/signup"
                 className={buttonVariants({
                   variant: 'default',
                   className:
@@ -89,7 +89,7 @@ const Navbar = () => {
             </div>
             <div className="md:hidden flex items-center space-x-2">
               <Link
-                href="/login"
+                href="/auth/login"
                 className={buttonVariants({
                   variant: 'outline',
                   className: 'rounded-full py-1 px-5 font-semibold',
@@ -108,7 +108,7 @@ const Navbar = () => {
           </div>
           {isMenuOpen && (
             <>
-              <div className="bg-white h-[90vh] w-[50vh] rounded-md absolute top-16 right-0">
+              <div className="bg-white h-[90vh] w-[50vh] rounded-md absolute top-16 right-0 md:hidden">
                 <div className="flex flex-col items-center justify-start mt-1 pt-6 space-y-2">
                   {menuItems.map((item) => (
                     <Link
@@ -131,12 +131,13 @@ const Navbar = () => {
                     </Link>
                   ))}
                   <Link
-                    href="/register"
+                    href="/auth/signup"
                     className={buttonVariants({
                       variant: 'default',
                       className:
                         'rounded-full w-[80%] py-0 px-5 text-gray-200 font-semibold bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
                     })}
+                    onClick={handleMenuClose}
                   >
                     Register
                   </Link>
