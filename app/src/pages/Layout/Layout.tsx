@@ -4,9 +4,9 @@ const Layout = () => {
   return (
     <>
       <Navbar />
-      <div id="main">
+      <main className="relative flex flex-col min-h-screen" id="main">
         <Outlet />
-      </div>
+      </main>
     </>
   );
 };
