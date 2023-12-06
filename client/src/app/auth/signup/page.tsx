@@ -24,6 +24,7 @@ import { endpoints } from '@/lib/endpoints';
 import { useMutate } from '@/lib/customHook';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const SingupSchema = z
   .object({
@@ -46,7 +47,7 @@ const SingupSchema = z
 
 type ISignupSchema = z.infer<typeof SingupSchema>;
 
-const page = () => {
+const Signup = () => {
   const { toast } = useToast();
   const { signupTourist } = endpoints;
   const form = useForm<ISignupSchema>({
@@ -93,7 +94,10 @@ const page = () => {
         <CardHeader>
           <CardTitle>Create An Account</CardTitle>
           <CardDescription>
-            Enter your Info below to create your account
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-blue-500">
+              Login here
+            </Link>
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -187,4 +191,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Signup;
