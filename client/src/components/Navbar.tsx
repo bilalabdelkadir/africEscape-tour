@@ -35,7 +35,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white bg-opacity-20 mx-2 rounded-b-3xl backdrop-blur-sm shadow-xl sticky z-50 top-0 inset-x-0 h-16 mb-4">
+    <nav className="bg-white  mx-2 rounded-b-3xl backdrop-blur-sm shadow-xl sticky z-50 top-0 inset-x-0 h-16 mb-2">
       <MaxWidthWrapper>
         <header className="border-b border-gray-200">
           <div className="flex items-center justify-between h-16">

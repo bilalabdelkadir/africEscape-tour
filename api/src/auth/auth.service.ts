@@ -176,7 +176,6 @@ export class AuthService {
         },
       });
 
-      // then we compare check if the operation system, browser, device and agent are the same
       if (
         refreshToken.operatingSystem !==
           this.parseUserAgent(userAgent).operatingSystem ||
