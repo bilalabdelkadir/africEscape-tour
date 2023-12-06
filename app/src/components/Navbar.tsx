@@ -71,7 +71,7 @@ const Navbar = () => {
                 to={Routes.TOURIST_LOGIN}
                 className={buttonVariants({
                   variant: 'outline',
-                  className: 'rounded-3xl py-1 px-5 font-semibold',
+                  className: 'rounded-full py-1 px-5 font-semibold',
                 })}
                 onClick={() => handleMenuItemClick('login')}
               >
@@ -82,7 +82,7 @@ const Navbar = () => {
                 className={buttonVariants({
                   variant: 'default',
                   className:
-                    'rounded-3xl py-0 px-5 text-gray-200 font-semibold  bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
+                    'rounded-full py-0 px-5 text-gray-200 font-semibold  bg-gradient-to-r from-teal-800 to-green-600 hover:bg-gradient-to-r hover:from-teal-500 hover:to-green-800',
                 })}
                 onClick={() => handleMenuItemClick('signup')}
               >

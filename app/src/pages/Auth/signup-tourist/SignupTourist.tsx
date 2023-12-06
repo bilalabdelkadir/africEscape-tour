@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Routes } from '@/constants/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router-dom';
 import { z } from 'zod';
@@ -58,8 +59,10 @@ const SignupTourist = () => {
     console.log(values);
   }
 
+  const [step, setStep] = useState<number>(1);
+
   return (
-    <div className="flex justify-center items-center font-jost">
+    <div className="flex justify-center items-center font-jost h-[80vh]">
       <Card className="w-[350px] md:w-[450px] shadow-lg mx-2 ">
         <CardHeader>
           <CardTitle>Create An Account</CardTitle>
@@ -73,86 +76,115 @@ const SignupTourist = () => {
         <CardContent className="grid gap-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Joe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="emaple@mail.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.confirmPassword &&
-                        form.formState.errors.confirmPassword.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
+              {step === 1 && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Joe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="emaple@mail.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
 
-              <Button
-                type="submit"
-                className="rounded-3xl w-full mx-auto"
-                size={'lg'}
-                // disabled={isPending}
-              >
-                {/* {isPending && (
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                )} */}
-                Sign up
-              </Button>
+              {step === 2 && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="password" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage>
+                          {form.formState.errors.confirmPassword &&
+                            form.formState.errors.confirmPassword.message}
+                        </FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
+              {step === 1 && (
+                <div className="flex  justify-between">
+                  <Button
+                    type="submit"
+                    className="rounded-3xl w-full mx-auto"
+                    size={'lg'}
+                    onClick={() => setStep(2)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+              {step === 2 && (
+                <div className="flex  justify-between">
+                  <Button
+                    type="submit"
+                    className="rounded-3xl w-[25%] mx-auto"
+                    size={'lg'}
+                    onClick={() => setStep(1)}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="rounded-3xl  w-[75%] mx-auto"
+                    size={'lg'}
+                  >
+                    Sign up
+                  </Button>
+                </div>
+              )}
             </form>
           </Form>
         </CardContent>
