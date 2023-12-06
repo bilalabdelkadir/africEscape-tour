@@ -8,6 +8,7 @@ import {
   Logger,
   Res,
   UseGuards,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -33,6 +34,7 @@ export class AuthController {
 
   @Post('sign-up/tourist')
   async createTourist(@Body() signupTouristDto: SignupTouristDto) {
+    console.log(signupTouristDto);
     try {
       const userExists = await this.usersService.findAccountByEmail(
         signupTouristDto.email,
@@ -45,7 +47,10 @@ export class AuthController {
       }
 
       return await this.authService.RegisterTouristAccount(signupTouristDto);
-    } catch (err) {}
+    } catch (err) {
+      Logger.log(err);
+      throw new HttpException(err.message, err.status);
+    }
   }
 
   @Post('sign-up/agency')
@@ -62,7 +67,10 @@ export class AuthController {
       }
 
       return await this.authService.RegisterAgencyAccount(signupAgencyDto);
-    } catch (err) {}
+    } catch (err) {
+      Logger.log(err);
+      throw new HttpException(err.message, err.status);
+    }
   }
 
   @Post('sign-in/tourist')
@@ -84,13 +92,11 @@ export class AuthController {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     });
 
-    res.cookie('access-token', response.accessToken, {
-      httpOnly: true,
-      secure: false,
-      expires: new Date(Date.now() + 1000 * 60 * 15),
-    });
+    const { refreshToken, ...finalResponse } = response;
 
-    return response;
+    return {
+      ...finalResponse,
+    };
   }
 
   @Get('me')
@@ -111,7 +117,6 @@ export class AuthController {
     console.log(req['user']);
 
     res.clearCookie('refresh-token');
-    res.clearCookie('access-token');
     const response = await this.authService.signout(req);
     return response;
   }

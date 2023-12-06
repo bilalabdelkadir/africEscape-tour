@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Jost, Fredoka } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import TanstackProvider from '@/components/providers/tanstack.provider';
+import { Toaster } from '@/components/ui/toaster';
 
 const jost = Jost({
   weight: ['400', '700'],
@@ -27,8 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jost.variable} ${fredoka.variable}`}>
-        <Navbar />
-        <main className="relative flex flex-col min-h-screen">{children}</main>
+        <TanstackProvider>
+          <Navbar />
+          <main className="relative flex flex-col min-h-screen">
+            {children}
+          </main>
+          <Toaster />
+        </TanstackProvider>
       </body>
     </html>
   );
