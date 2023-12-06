@@ -1,20 +1,17 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
-import HeroImage from '../../public/HeroImage.jpg';
+import HeroImage from '../assets/HeroImage.jpg';
 import { buttonVariants } from './ui/button';
+import { NavLink } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
     <div className="w-full relative">
       <div className="bg-gray-600 absolute inset-0 opacity-80"></div>
       <div className="bg-green-600">
-        <Image
+        <img
           src={HeroImage}
           alt="Hero section image"
           className="object-cover w-screen h-[70vh] md:h-[80vh]
            lg:h-[80vh] xl:h-[70vh] 2xl:h-[50vh]
-           
            "
         />
       </div>
@@ -35,8 +32,8 @@ const HeroSection = () => {
         >
           We are committed to providing you with the best experience
         </p>
-        <Link
-          href="/register"
+        <NavLink
+          to="/register"
           className={buttonVariants({
             variant: 'default',
             size: 'lg',
@@ -45,7 +42,7 @@ const HeroSection = () => {
           })}
         >
           Explore Now
-        </Link>
+        </NavLink>
       </div>
     </div>
   );
