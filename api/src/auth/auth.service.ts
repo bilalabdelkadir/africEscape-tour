@@ -30,7 +30,10 @@ export class AuthService {
 
   private readonly deviceDetector = new DeviceDetector();
 
-  async RegisterTouristAccount(signupTouristDto: SignupTouristDto) {
+  async RegisterTouristAccount(
+    signupTouristDto: SignupTouristDto,
+    req: Request,
+  ) {
     try {
       const hashedPassword = await this.hashingService.hash(
         signupTouristDto.password,
@@ -42,7 +45,53 @@ export class AuthService {
         signupTouristDto.lastName,
       );
 
-      return newUser;
+      // generate access token and refresh token
+      const { accessToken, refreshToken, refreshTokenIdentifier } =
+        await this.jwtGeneratorService.generateBothTokens(
+          newUser.id,
+          newUser.email,
+        );
+
+      if (accessToken === undefined || refreshToken === undefined) {
+        throw new HttpException('Failed to autheticate', 500);
+      }
+
+      const hasedRefreshToken = await this.hashingService.hash(refreshToken);
+
+      const userRequestInfo = this.parseUserAgent(req.headers['user-agent']);
+
+      const refreshTokenExpiresAt = new Date(
+        new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+
+      await this.usersService.createRefreshToken(
+        newUser.id,
+        refreshTokenIdentifier,
+        hasedRefreshToken,
+        refreshTokenExpiresAt,
+        userRequestInfo.operatingSystem,
+        userRequestInfo.browser,
+        userRequestInfo.device,
+        userRequestInfo.agent,
+      );
+
+      const user = {
+        id: newUser.id,
+        firstName: newUser.Tourist[0].firstName,
+        lastName: newUser.Tourist[0].lastName,
+        email: newUser.email,
+        accountType: newUser.accountType,
+        isEmailVerified: newUser.isEmailVerified,
+        avatar: newUser.Tourist[0].avatar,
+        createdAt: newUser.createdAt,
+      };
+
+      return {
+        message: 'Successfully signed up',
+        accessToken,
+        refreshToken,
+        user,
+      };
     } catch (err) {
       throw err;
     }
@@ -264,8 +313,11 @@ export class AuthService {
   async me(req: Request) {
     try {
       const user = req['user'];
+      console.log(user);
 
       const userExists = await this.usersService.findAccountByEmail(user.email);
+
+      console.log('userex', userExists);
 
       if (!userExists) {
         throw new NotFoundException('User not found');

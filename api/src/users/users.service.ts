@@ -25,8 +25,8 @@ export class UsersService {
         id,
       },
       include: {
-        refreshTokens: true,
         Tourist: true,
+        refreshTokens: true,
       },
     });
   }
@@ -54,6 +54,8 @@ export class UsersService {
         email: true,
         createdAt: true,
         updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
         Tourist: true,
       },
     });

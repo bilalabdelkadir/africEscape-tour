@@ -33,7 +33,14 @@ export class AuthController {
   private readonly deviceDetector = new DeviceDetector();
 
   @Post('sign-up/tourist')
-  async createTourist(@Body() signupTouristDto: SignupTouristDto) {
+  async createTourist(
+    @Body() signupTouristDto: SignupTouristDto,
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res = response,
+  ) {
     console.log(signupTouristDto);
     try {
       const userExists = await this.usersService.findAccountByEmail(
@@ -46,7 +53,22 @@ export class AuthController {
         );
       }
 
-      return await this.authService.RegisterTouristAccount(signupTouristDto);
+      const result = await this.authService.RegisterTouristAccount(
+        signupTouristDto,
+        req,
+      );
+
+      const { refreshToken, ...userData } = result;
+
+      res.cookie('refresh-token', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      });
+
+      return {
+        ...userData,
+      };
     } catch (err) {
       Logger.log(err);
       throw new HttpException(err.message, err.status);
@@ -99,7 +121,7 @@ export class AuthController {
     };
   }
 
-  @Get('me')
+  @Get('/tourist/me')
   @UseGuards(AccessTokenGuard)
   async getMe(@Req() req: Request) {
     return this.authService.me(req);
