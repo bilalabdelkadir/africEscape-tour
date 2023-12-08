@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
   HttpException,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -95,6 +96,7 @@ export class AuthController {
     }
   }
 
+  @HttpCode(200)
   @Post('sign-in/tourist')
   async signInTourist(
     @Body() signinTouristDto: SigninTouristDto,

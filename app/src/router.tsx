@@ -10,6 +10,7 @@ import TouristProfile from './pages/Profiles/tourist/TouristProfile';
 import Blogs from './pages/blogs/Blogs';
 import Contact from './pages/contact/Contact';
 import { Routes } from './constants/routes';
+import PrivateTouristRoute from './components/PrivateTouristRoute';
 
 const router = createBrowserRouter([
   {
@@ -22,9 +23,14 @@ const router = createBrowserRouter([
       { path: Routes.DESTINATIONS, element: <Destinations /> },
       { path: Routes.DESTINATIONPAGE, element: <Destination /> },
       { path: Routes.AGENCY_PROFILE, element: <AgencyProfile /> },
-      { path: Routes.TOURIST_PROFILE, element: <TouristProfile /> },
       { path: Routes.CONTACT, element: <Contact /> },
       { path: Routes.BLOGS, element: <Blogs /> },
+      {
+        element: <PrivateTouristRoute />,
+        children: [
+          { path: Routes.TOURIST_PROFILE, element: <TouristProfile /> },
+        ],
+      },
     ],
   },
 ]);

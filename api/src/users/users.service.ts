@@ -7,13 +7,19 @@ import { CreateUserOutputDto } from './dtos/create-user.output.dto';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAccountByEmail(email: string): Promise<Account> {
+  async findAccountByEmail(email: string) {
     return this.prisma.account.findUnique({
       where: {
         email,
       },
-      include: {
-        refreshTokens: true,
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        hashedPassword: true,
+        updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
         Tourist: true,
       },
     });
