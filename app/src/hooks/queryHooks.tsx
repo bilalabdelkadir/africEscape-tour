@@ -73,6 +73,8 @@ export const useMutate = (
   onError?: (error: any) => void,
   onSuccess?: (data: any) => void
 ) => {
+  const token = localStorage.getItem('token');
+
   const mutationFn = async (data?: any) => {
     const config: AxiosRequestConfig = {
       method,
@@ -81,6 +83,7 @@ export const useMutate = (
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       timeout: 5000,
     };

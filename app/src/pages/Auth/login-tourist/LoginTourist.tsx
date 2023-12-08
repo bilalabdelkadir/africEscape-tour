@@ -15,12 +15,16 @@ import {
   Form,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
 import { Routes } from '@/constants/routes';
+import { useMutate } from '@/hooks/queryHooks';
+import { endpoints } from '@/lib/endponts';
+import { ITouristResponse } from '@/types/tourist.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { user, isUserLoggedIn } from '@/global-state/user.globalstate';
+import { Loader2Icon } from 'lucide-react';
 
 const LoginSchema = z.object({
   email: z.string().min(1, { message: 'Email is required' }).email({
@@ -34,7 +38,8 @@ const LoginSchema = z.object({
 type ILoginSchema = z.infer<typeof LoginSchema>;
 
 const LoginTourist = () => {
-  const { toast } = useToast();
+  const { loginTourist } = endpoints;
+  const navigate = useNavigate();
   const form = useForm<ILoginSchema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -43,8 +48,25 @@ const LoginTourist = () => {
     },
   });
 
+  const { mutate, isLoading } = useMutate(
+    loginTourist,
+    'POST',
+    (error) => {
+      console.log(error);
+    },
+    (data: ITouristResponse) => {
+      user.value = data.user;
+      isUserLoggedIn.value = data.accessToken ? true : false;
+      localStorage.setItem('token', data.accessToken!);
+      navigate(Routes.TOURIST_PROFILE);
+      console.log(data.message);
+      console.log(data);
+    }
+  );
+
   const onSubmit = (values: ILoginSchema) => {
     console.log(values);
+    mutate(values);
   };
 
   return (
@@ -93,11 +115,11 @@ const LoginTourist = () => {
                 type="submit"
                 className="rounded-3xl w-full mx-auto"
                 size={'lg'}
-                // disabled={isPending}
+                disabled={isLoading}
               >
-                {/* {isPending && (
+                {isLoading && (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                )} */}
+                )}
                 Log In
               </Button>
             </form>
