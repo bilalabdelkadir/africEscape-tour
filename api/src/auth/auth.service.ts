@@ -176,11 +176,22 @@ export class AuthService {
         userRequestInfo.agent,
       );
 
+      const user = {
+        id: userExists.id,
+        firstName: userExists.Tourist[0].firstName,
+        lastName: userExists.Tourist[0].lastName,
+        email: userExists.email,
+        accountType: userExists.accountType,
+        isEmailVerified: userExists.isEmailVerified,
+        avatar: userExists.Tourist[0].avatar,
+        createdAt: userExists.createdAt,
+      };
+
       return {
         message: 'Successfully signed in',
         accessToken,
         refreshToken,
-        user: userExists,
+        user: user,
       };
     } catch (err) {
       Logger.error(err);
@@ -312,10 +323,11 @@ export class AuthService {
 
   async me(req: Request) {
     try {
-      const user = req['user'];
-      console.log(user);
+      let reqUser = req['user'];
 
-      const userExists = await this.usersService.findAccountByEmail(user.email);
+      const userExists = await this.usersService.findAccountByEmail(
+        reqUser.email,
+      );
 
       console.log('userex', userExists);
 
@@ -323,9 +335,20 @@ export class AuthService {
         throw new NotFoundException('User not found');
       }
 
+      const user = {
+        id: userExists.id,
+        firstName: userExists.Tourist[0].firstName,
+        lastName: userExists.Tourist[0].lastName,
+        email: userExists.email,
+        accountType: userExists.accountType,
+        isEmailVerified: userExists.isEmailVerified,
+        avatar: userExists.Tourist[0].avatar,
+        createdAt: userExists.createdAt,
+      };
+
       return {
         message: 'User found',
-        user: userExists,
+        user: user,
       };
     } catch (err) {
       Logger.error(err);
