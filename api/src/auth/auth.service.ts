@@ -50,6 +50,7 @@ export class AuthService {
         await this.jwtGeneratorService.generateBothTokens(
           newUser.id,
           newUser.email,
+          newUser.accountType,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -150,6 +151,7 @@ export class AuthService {
         await this.jwtGeneratorService.generateBothTokens(
           userExists.id,
           userExists.email,
+          userExists.accountType,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -278,6 +280,7 @@ export class AuthService {
       } = await this.jwtGeneratorService.generateBothTokens(
         user.id,
         user.email,
+        user.accountType,
       );
 
       // then we hash the new refresh token
@@ -328,8 +331,6 @@ export class AuthService {
       const userExists = await this.usersService.findAccountByEmail(
         reqUser.email,
       );
-
-      console.log('userex', userExists);
 
       if (!userExists) {
         throw new NotFoundException('User not found');
