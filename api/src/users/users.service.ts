@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserOutputDto } from './dtos/create-user.output.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,16 +19,24 @@ export class UsersService {
         accountType: true,
         isEmailVerified: true,
         Tourist: true,
+        refreshTokens: true,
       },
     });
   }
 
-  async findAccountById(id: string): Promise<Account> {
+  async findAccountById(id: string) {
     return this.prisma.account.findUnique({
       where: {
         id,
       },
-      include: {
+
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
         Tourist: true,
         refreshTokens: true,
       },
@@ -62,6 +68,7 @@ export class UsersService {
         updatedAt: true,
         accountType: true,
         isEmailVerified: true,
+        refreshTokens: true,
         Tourist: true,
       },
     });

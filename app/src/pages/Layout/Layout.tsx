@@ -8,7 +8,7 @@ const Layout = () => {
 
   useEffect(() => {
     if (data) {
-      user.value = data.user;
+      user.value = data;
       isUserLoggedIn.value = true;
     }
   }, [data]);
