@@ -18,12 +18,12 @@ import { Input } from '@/components/ui/input';
 import { Routes } from '@/constants/routes';
 import { useMutate } from '@/hooks/queryHooks';
 import { endpoints } from '@/lib/endponts';
-import { ITouristAccount } from '@/types/tourist.type';
+import { AccountType, ILoginResponse } from '@/types/tourist.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { user, isUserLoggedIn } from '@/global-state/user.globalstate';
+import { user, isUserLoggedIn, agency } from '@/global-state/user.globalstate';
 import { Loader2Icon } from 'lucide-react';
 
 const LoginSchema = z.object({
@@ -54,12 +54,18 @@ const LoginTourist = () => {
     (error) => {
       console.log(error);
     },
-    (data: ITouristAccount) => {
+    (data: ILoginResponse) => {
       console.log('test', data);
-      user.value = data;
+      data.accountType === AccountType.TOURIST
+        ? (user.value = data)
+        : (agency.value = data);
       isUserLoggedIn.value = data.accessToken ? true : false;
       localStorage.setItem('token', data.accessToken!);
-      navigate(Routes.TOURIST_PROFILE);
+      navigate(
+        data.accountType === AccountType.TOURIST
+          ? Routes.TOURIST_PROFILE
+          : Routes.AGENCY_PROFILE
+      );
     }
   );
 

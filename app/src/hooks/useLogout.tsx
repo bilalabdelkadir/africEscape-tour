@@ -1,6 +1,5 @@
 import { endpoints } from '@/lib/endponts';
-import { isUserLoggedIn, user } from '@/global-state/user.globalstate';
-import React from 'react';
+import { isUserLoggedIn, user, agency } from '@/global-state/user.globalstate';
 import { useNavigate } from 'react-router-dom';
 import { Routes } from '@/constants/routes';
 import { useMutate } from './queryHooks';
@@ -16,6 +15,7 @@ const useLogout = () => {
     },
     () => {
       user.value = null;
+      agency.value = null;
       isUserLoggedIn.value = false;
       localStorage.removeItem('token');
       navigate(Routes.HOME);
