@@ -36,6 +36,7 @@ export class JwtGeneratorService {
     accountType: string,
   ): Promise<BothTokensResponse> {
     const refreshTokenIdentifier = this.generateUUID();
+    console.log('generateBothTokens', refreshTokenIdentifier);
     const accessToken = await this.generateAccessToken(
       id,
       email,
@@ -59,8 +60,8 @@ export class JwtGeneratorService {
   generateAccessToken = async (
     id: string,
     email: string,
+    refreshTokenIdentifierArg: string,
     accountType: string,
-    refreshTokenIdentifierArg?: string,
   ): Promise<AccessTokenResponse> => {
     const refreshTokenIdentifier =
       refreshTokenIdentifierArg || this.generateUUID();
@@ -79,8 +80,8 @@ export class JwtGeneratorService {
   generateRefreshToken = async (
     id: string,
     email: string,
+    refreshTokenIdentifierArg: string,
     accountType: string,
-    refreshTokenIdentifierArg?: string,
   ) => {
     const refreshTokenIdentifier =
       refreshTokenIdentifierArg || this.generateUUID();
