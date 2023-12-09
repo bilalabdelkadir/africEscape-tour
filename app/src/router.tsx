@@ -11,6 +11,7 @@ import Blogs from './pages/blogs/Blogs';
 import Contact from './pages/contact/Contact';
 import { Routes } from './constants/routes';
 import PrivateTouristRoute from './components/PrivateTouristRoute';
+import SignupAgency from './pages/Auth/signup-Agency/SignupAgency';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: Routes.TOURIST_SIGN_UP, element: <SignupTourist /> },
+      { path: Routes.AGENCY_SIGN_UP, element: <SignupAgency /> },
       { path: Routes.TOURIST_LOGIN, element: <LoginTourist /> },
       { path: Routes.DESTINATIONS, element: <Destinations /> },
       { path: Routes.DESTINATIONPAGE, element: <Destination /> },

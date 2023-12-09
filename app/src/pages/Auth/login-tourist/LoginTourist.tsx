@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Routes } from '@/constants/routes';
 import { useMutate } from '@/hooks/queryHooks';
 import { endpoints } from '@/lib/endponts';
-import { ITouristResponse } from '@/types/tourist.type';
+import { ITouristAccount } from '@/types/tourist.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -54,13 +54,12 @@ const LoginTourist = () => {
     (error) => {
       console.log(error);
     },
-    (data: ITouristResponse) => {
-      user.value = data.user;
+    (data: ITouristAccount) => {
+      console.log('test', data);
+      user.value = data;
       isUserLoggedIn.value = data.accessToken ? true : false;
       localStorage.setItem('token', data.accessToken!);
       navigate(Routes.TOURIST_PROFILE);
-      console.log(data.message);
-      console.log(data);
     }
   );
 

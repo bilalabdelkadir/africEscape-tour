@@ -76,29 +76,17 @@ export class AuthService {
         userRequestInfo.agent,
       );
 
-      const user = {
-        id: newUser.id,
-        firstName: newUser.Tourist[0].firstName,
-        lastName: newUser.Tourist[0].lastName,
-        email: newUser.email,
-        accountType: newUser.accountType,
-        isEmailVerified: newUser.isEmailVerified,
-        avatar: newUser.Tourist[0].avatar,
-        createdAt: newUser.createdAt,
-      };
-
       return {
-        message: 'Successfully signed up',
         accessToken,
         refreshToken,
-        user,
+        ...newUser,
       };
     } catch (err) {
       throw err;
     }
   }
 
-  async RegisterAgencyAccount(signupAgencyDto: SignupAgencyDto) {
+  async RegisterAgencyAccount(signupAgencyDto: SignupAgencyDto, req: Request) {
     try {
       const hashedPassword = await this.hashingService.hash(
         signupAgencyDto.password,
@@ -113,21 +101,47 @@ export class AuthService {
         country: signupAgencyDto.country,
       });
 
-      return newAgency;
+      const { accessToken, refreshToken, refreshTokenIdentifier } =
+        await this.jwtGeneratorService.generateBothTokens(
+          newAgency.id,
+          newAgency.email,
+          newAgency.accountType,
+        );
+
+      if (accessToken === undefined || refreshToken === undefined) {
+        throw new HttpException('Failed to autheticate', 500);
+      }
+      const hasedRefreshToken = await this.hashingService.hash(refreshToken);
+
+      const agencyRequestInfo = this.parseUserAgent(req.headers['user-agent']);
+
+      const refreshTokenExpiresAt = new Date(
+        new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+
+      await this.usersService.createRefreshToken(
+        newAgency.id,
+        refreshTokenIdentifier,
+        hasedRefreshToken,
+        refreshTokenExpiresAt,
+        agencyRequestInfo.operatingSystem,
+        agencyRequestInfo.browser,
+        agencyRequestInfo.device,
+        agencyRequestInfo.agent,
+      );
+
+      return {
+        ...newAgency,
+        accessToken,
+        refreshToken,
+      };
     } catch (err) {
-      throw err;
+      console.log(err);
+      throw new HttpException(err, 500);
     }
   }
 
-  async signInTourist(
-    signinTouristDto: SigninTouristDto,
-    req: Request,
-  ): Promise<{
-    message: string;
-    accessToken: string;
-    refreshToken: string;
-    user: any;
-  }> {
+  async signInTourist(signinTouristDto: SigninTouristDto, req: Request) {
     try {
       const userExists = await this.usersService.findAccountByEmail(
         signinTouristDto.email,
@@ -178,22 +192,10 @@ export class AuthService {
         userRequestInfo.agent,
       );
 
-      const user = {
-        id: userExists.id,
-        firstName: userExists.Tourist[0].firstName,
-        lastName: userExists.Tourist[0].lastName,
-        email: userExists.email,
-        accountType: userExists.accountType,
-        isEmailVerified: userExists.isEmailVerified,
-        avatar: userExists.Tourist[0].avatar,
-        createdAt: userExists.createdAt,
-      };
-
       return {
-        message: 'Successfully signed in',
         accessToken,
         refreshToken,
-        user: user,
+        ...userExists,
       };
     } catch (err) {
       Logger.error(err);
@@ -336,21 +338,7 @@ export class AuthService {
         throw new NotFoundException('User not found');
       }
 
-      const user = {
-        id: userExists.id,
-        firstName: userExists.Tourist[0].firstName,
-        lastName: userExists.Tourist[0].lastName,
-        email: userExists.email,
-        accountType: userExists.accountType,
-        isEmailVerified: userExists.isEmailVerified,
-        avatar: userExists.Tourist[0].avatar,
-        createdAt: userExists.createdAt,
-      };
-
-      return {
-        message: 'User found',
-        user: user,
-      };
+      return userExists;
     } catch (err) {
       Logger.error(err);
       throw err;
