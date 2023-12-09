@@ -53,7 +53,9 @@ const ProfileNav = () => {
           <>
             <DropdownMenuLabel className="font-Jost">
               <p className="text-sm font-bold leading-none capitalize">
-                {user.value.firstName + ' - ' + user.value.lastName}
+                {user.value.Tourist.firstName +
+                  ' - ' +
+                  user.value.Tourist.lastName}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.value.email}
@@ -137,7 +139,7 @@ const ProfileNav = () => {
 
             <DropdownMenuItem
               className="cursor-pointer "
-              onClick={() => navigate(Routes.TOURIST_SIGN_UP)}
+              onClick={() => navigate(Routes.AGENCY_SIGN_UP)}
             >
               <div className="text-center font-semibold w-full bg-primary text-white py-2 rounded-md">
                 Register as agency

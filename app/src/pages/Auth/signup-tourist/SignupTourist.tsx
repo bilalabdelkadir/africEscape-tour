@@ -24,7 +24,7 @@ import { z } from 'zod';
 import { Loader2Icon, RewindIcon } from 'lucide-react';
 import { endpoints } from '@/lib/endponts';
 import { useMutate } from '@/hooks/queryHooks';
-import { ITouristResponse } from '@/types/tourist.type';
+import { ITouristAccount } from '@/types/tourist.type';
 import { isUserLoggedIn, user } from '@/global-state/user.globalstate';
 
 const SingupSchema = z
@@ -69,12 +69,11 @@ const SignupTourist = () => {
     (error) => {
       console.log(error);
     },
-    (data: ITouristResponse) => {
-      user.value = data.user;
+    (data: ITouristAccount) => {
+      user.value = data;
       isUserLoggedIn.value = data.accessToken ? true : false;
       localStorage.setItem('token', data.accessToken!);
       navigate(Routes.TOURIST_PROFILE);
-      console.log(data.message);
       console.log(data);
     }
   );

@@ -1,16 +1,27 @@
-export interface ITourist {
+export interface ITouristProfile {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   createdAt: Date;
+  updatedAt: Date;
+  avatar: string | null;
   accountType: 'TOURIST' | 'AGENCY' | 'AGENCY_EMPLOYEE';
   isEmailVerified: boolean;
-  accessToken: string;
 }
 
-export interface ITouristResponse {
+export interface ITouristAccount {
   accessToken: string;
-  user: ITourist;
-  message: string;
+  id: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+  accountType: AccountType;
+  isEmailVerified: boolean;
+  Tourist: ITouristProfile;
+}
+export enum AccountType {
+  TOURIST = 'TOURIST',
+  AGENCY = 'AGENCY',
+  AGENCY_EMPLOYEE = 'AGENCY_EMPLOYEE',
 }
