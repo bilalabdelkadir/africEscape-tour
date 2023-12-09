@@ -315,6 +315,8 @@ export class AuthService {
   async signout(req: Request) {
     const refreshTokenIdentifier = req['user'].refreshTokenIdentifier;
 
+    console.log('refreshTokenIdentifier', refreshTokenIdentifier);
+
     await this.Prisma.refreshTokens.deleteMany({
       where: {
         refreshTokenIdentifier,
