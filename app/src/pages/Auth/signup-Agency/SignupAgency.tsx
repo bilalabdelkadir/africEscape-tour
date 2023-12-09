@@ -103,7 +103,7 @@ const SignupAgency = () => {
   };
 
   return (
-    <div className="flex justify-center  items-center font-jost">
+    <div className="flex justify-center items-center font-jost">
       <Card className="w-[350px] md:w-[450px] shadow-lg mx-2 ">
         <CardHeader>
           <CardTitle>Create your agency account.</CardTitle>
