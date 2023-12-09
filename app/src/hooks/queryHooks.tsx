@@ -1,5 +1,5 @@
 import { endpoints } from '@/lib/endponts';
-import { ITouristAccount } from '@/types/tourist.type';
+import { ILoginResponse } from '@/types/tourist.type';
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { useQuery, useMutation } from 'react-query';
 
@@ -33,7 +33,7 @@ export const fetchUserProfile = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        return response.data as ITouristAccount;
+        return response.data as ILoginResponse;
       } catch (error) {
         throw new Error('Error fetching user profile');
       }

@@ -15,11 +15,13 @@ import {
   LogIn,
   UserRoundPlus,
 } from 'lucide-react';
-import { user } from '@/global-state/user.globalstate';
+import { agency, user } from '@/global-state/user.globalstate';
 import { useNavigate } from 'react-router-dom';
 import { Routes } from '@/constants/routes';
 import useLogout from '@/hooks/useLogout';
 import { IMenuItem } from './Navbar';
+import { AccountType } from '@/types';
+import { useEffect } from 'react';
 
 const menuItems: IMenuItem[] = [
   { name: 'Home', href: Routes.HOME },
@@ -31,6 +33,10 @@ const menuItems: IMenuItem[] = [
 const ProfileNav = () => {
   const { isLoading, onLogout } = useLogout();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('profile nav', agency.value);
+  }, [agency.value]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -64,6 +70,19 @@ const ProfileNav = () => {
             <DropdownMenuSeparator />
           </>
         )}
+        {agency.value && agency.value.accountType === AccountType.AGENCY && (
+          <>
+            <DropdownMenuLabel className="font-Jost">
+              <p className="text-sm font-bold leading-none capitalize">
+                {agency.value.Agency.agencyName}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {agency.value.Agency.email}
+              </p>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         <DropdownMenuGroup className="md:hidden font-Jost font-semibold">
           {menuItems.map((item, index) => (
@@ -76,14 +95,18 @@ const ProfileNav = () => {
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
-        {user.value && user.value.accountType === 'TOURIST' && (
+        {(user.value || agency.value) && (
           <>
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => navigate(Routes.TOURIST_PROFILE)}
+                onClick={() =>
+                  navigate(
+                    user.value ? Routes.TOURIST_PROFILE : Routes.AGENCY_PROFILE
+                  )
+                }
               >
-                Profile
+                {user.value ? 'Profile' : 'Dashboard'}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -112,7 +135,7 @@ const ProfileNav = () => {
           </>
         )}
 
-        {!user.value && (
+        {!user.value && !agency.value && (
           <>
             <DropdownMenuGroup>
               <DropdownMenuItem

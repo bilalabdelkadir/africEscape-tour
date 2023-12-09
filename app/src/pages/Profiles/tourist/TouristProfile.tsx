@@ -1,4 +1,5 @@
 import { user } from '@/global-state/user.globalstate';
+
 const TouristProfile = () => {
   return (
     <div>

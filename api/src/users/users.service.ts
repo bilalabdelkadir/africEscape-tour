@@ -19,7 +19,7 @@ export class UsersService {
         accountType: true,
         isEmailVerified: true,
         Tourist: true,
-        refreshTokens: true,
+        Agency: true,
       },
     });
   }
@@ -38,6 +38,7 @@ export class UsersService {
         accountType: true,
         isEmailVerified: true,
         Tourist: true,
+        Agency: true,
         refreshTokens: true,
       },
     });
