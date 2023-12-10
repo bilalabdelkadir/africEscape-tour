@@ -24,7 +24,7 @@ async function bootstrap() {
       .setTitle('AfricEscape - API')
       .setDescription('Backend API for AfricEscape.')
       .addBearerAuth()
-      .addCookieAuth('x-refresh-token')
+      .addCookieAuth('refresh-token')
       .setVersion('v1.0')
       .build();
 

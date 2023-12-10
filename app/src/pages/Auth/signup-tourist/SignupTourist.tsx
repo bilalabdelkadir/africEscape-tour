@@ -19,8 +19,13 @@ import { Routes } from '@/constants/routes';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { Loader2Icon, RewindIcon } from 'lucide-react';
+import { endpoints } from '@/lib/endponts';
+import { useMutate } from '@/hooks/queryHooks';
+import { ITouristAccount } from '@/types/tourist.type';
+import { isUserLoggedIn, user } from '@/global-state/user.globalstate';
 
 const SingupSchema = z
   .object({
@@ -31,7 +36,7 @@ const SingupSchema = z
     }),
     password: z
       .string()
-      .min(6, { message: 'Password must be atleast 6 characters' }),
+      .min(7, { message: 'Password must be atleast 6 characters' }),
     confirmPassword: z
       .string()
       .min(6, { message: 'Password must be atleast 6 characters' }),
@@ -44,6 +49,9 @@ const SingupSchema = z
 type ISignupSchema = z.infer<typeof SingupSchema>;
 
 const SignupTourist = () => {
+  const { signupTourist } = endpoints;
+  const navigate = useNavigate();
+
   const form = useForm<ISignupSchema>({
     resolver: zodResolver(SingupSchema),
     defaultValues: {
@@ -55,8 +63,24 @@ const SignupTourist = () => {
     },
   });
 
+  const { mutate, isLoading } = useMutate(
+    signupTourist,
+    'POST',
+    (error) => {
+      console.log(error);
+    },
+    (data: ITouristAccount) => {
+      user.value = data;
+      isUserLoggedIn.value = data.accessToken ? true : false;
+      localStorage.setItem('token', data.accessToken!);
+      navigate(Routes.TOURIST_PROFILE);
+      console.log(data);
+    }
+  );
+
   function onSubmit(values: ISignupSchema) {
     console.log(values);
+    mutate(values);
   }
 
   const [step, setStep] = useState<number>(1);
@@ -161,6 +185,7 @@ const SignupTourist = () => {
                     className="rounded-3xl w-full mx-auto"
                     size={'lg'}
                     onClick={() => setStep(2)}
+                    disabled={isLoading}
                   >
                     Next
                   </Button>
@@ -169,18 +194,23 @@ const SignupTourist = () => {
               {step === 2 && (
                 <div className="flex  justify-between">
                   <Button
-                    type="submit"
-                    className="rounded-3xl w-[25%] mx-auto"
-                    size={'lg'}
+                    size={'icon'}
                     onClick={() => setStep(1)}
+                    variant={'ghost'}
+                    className=" w-10 h-10"
+                    disabled={isLoading}
                   >
-                    Back
+                    <RewindIcon className="w-6 h-6 text-primary " />
                   </Button>
                   <Button
                     type="submit"
-                    className="rounded-3xl  w-[75%] mx-auto"
+                    className="rounded-3xl w-[75%] mx-auto"
                     size={'lg'}
+                    disabled={isLoading}
                   >
+                    {isLoading && (
+                      <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     Sign up
                   </Button>
                 </div>

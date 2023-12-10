@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
   HttpException,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -18,9 +19,9 @@ import {
 } from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import * as DeviceDetector from 'device-detector-js';
-import { Request, response } from 'express';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { Response, Request } from 'express';
 import { AgencyService } from 'src/agency/agency.service';
 
 @Controller('auth')
@@ -33,7 +34,14 @@ export class AuthController {
   private readonly deviceDetector = new DeviceDetector();
 
   @Post('sign-up/tourist')
-  async createTourist(@Body() signupTouristDto: SignupTouristDto) {
+  async createTourist(
+    @Body() signupTouristDto: SignupTouristDto,
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+  ) {
     console.log(signupTouristDto);
     try {
       const userExists = await this.usersService.findAccountByEmail(
@@ -46,7 +54,22 @@ export class AuthController {
         );
       }
 
-      return await this.authService.RegisterTouristAccount(signupTouristDto);
+      const result = await this.authService.RegisterTouristAccount(
+        signupTouristDto,
+        req,
+      );
+
+      const { refreshToken, ...userData } = result;
+
+      res.cookie('refresh-token', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      });
+
+      return {
+        ...userData,
+      };
     } catch (err) {
       Logger.log(err);
       throw new HttpException(err.message, err.status);
@@ -54,7 +77,14 @@ export class AuthController {
   }
 
   @Post('sign-up/agency')
-  async createAgency(@Body() signupAgencyDto: SignupAgencyDto) {
+  async createAgency(
+    @Body() signupAgencyDto: SignupAgencyDto,
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+  ) {
     try {
       const userExists = await this.usersService.findAccountByEmail(
         signupAgencyDto.email,
@@ -66,13 +96,27 @@ export class AuthController {
         );
       }
 
-      return await this.authService.RegisterAgencyAccount(signupAgencyDto);
+      const data = await this.authService.RegisterAgencyAccount(
+        signupAgencyDto,
+        req,
+      );
+
+      const { refreshToken, ...agency } = data;
+
+      res.cookie('refresh-token', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      });
+
+      return agency;
     } catch (err) {
       Logger.log(err);
       throw new HttpException(err.message, err.status);
     }
   }
 
+  @HttpCode(200)
   @Post('sign-in/tourist')
   async signInTourist(
     @Body() signinTouristDto: SigninTouristDto,
@@ -80,26 +124,24 @@ export class AuthController {
     @Res({
       passthrough: true,
     })
-    res = response,
+    res: Response,
   ) {
     const response = await this.authService.signInTourist(
       signinTouristDto,
       req,
     );
-    res.cookie('refresh-token', response.refreshToken, {
+    const { refreshToken, ...user } = response;
+
+    res.cookie('refresh-token', refreshToken, {
       httpOnly: true,
       secure: false,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     });
 
-    const { refreshToken, ...finalResponse } = response;
-
-    return {
-      ...finalResponse,
-    };
+    return user;
   }
 
-  @Get('me')
+  @Get('/tourist/me')
   @UseGuards(AccessTokenGuard)
   async getMe(@Req() req: Request) {
     return this.authService.me(req);
@@ -112,7 +154,7 @@ export class AuthController {
     @Res({
       passthrough: true,
     })
-    res = response,
+    res: Response,
   ) {
     console.log(req['user']);
 
@@ -128,7 +170,7 @@ export class AuthController {
     @Res({
       passthrough: true,
     })
-    res = response,
+    res: Response,
   ) {
     const response = await this.authService.refreshTokenTest(req);
     res.cookie('refresh-token', response.refreshToken, {
