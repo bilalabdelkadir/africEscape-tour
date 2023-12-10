@@ -31,10 +31,6 @@ export class SignupTouristDto {
   @IsStrongPassword(
     {
       minLength: 7,
-      minLowercase: 1,
-      minUppercase: 1,
-      minSymbols: 1,
-      minNumbers: 1,
     },
     {
       message:

@@ -10,6 +10,12 @@ import TouristProfile from './pages/Profiles/tourist/TouristProfile';
 import Blogs from './pages/blogs/Blogs';
 import Contact from './pages/contact/Contact';
 import { Routes } from './constants/routes';
+import PrivateTouristRoute from './components/PrivateTouristRoute';
+import PrivateAgencyRoute from './components/PrivateAgencyRoute';
+import SignupAgency from './pages/Auth/signup-Agency/SignupAgency';
+import PublicPages from './components/PublicPages';
+import CreateTour from './pages/Profiles/agency/CreateTour';
+import TourList from './pages/Profiles/agency/TourList';
 
 const router = createBrowserRouter([
   {
@@ -17,14 +23,46 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: Routes.TOURIST_SIGN_UP, element: <SignupTourist /> },
-      { path: Routes.TOURIST_LOGIN, element: <LoginTourist /> },
       { path: Routes.DESTINATIONS, element: <Destinations /> },
       { path: Routes.DESTINATIONPAGE, element: <Destination /> },
-      { path: Routes.AGENCY_PROFILE, element: <AgencyProfile /> },
-      { path: Routes.TOURIST_PROFILE, element: <TouristProfile /> },
       { path: Routes.CONTACT, element: <Contact /> },
       { path: Routes.BLOGS, element: <Blogs /> },
+      {
+        element: <PublicPages />,
+        children: [
+          { path: Routes.TOURIST_SIGN_UP, element: <SignupTourist /> },
+          { path: Routes.AGENCY_SIGN_UP, element: <SignupAgency /> },
+          { path: Routes.TOURIST_LOGIN, element: <LoginTourist /> },
+        ],
+      },
+      {
+        element: <PrivateAgencyRoute />,
+        children: [
+          {
+            path: Routes.AGENCY_PROFILE,
+            element: <AgencyProfile />,
+            children: [
+              {
+                path: `create-tour`,
+                element: <CreateTour />,
+              },
+              {
+                path: `tour-list`,
+                element: <TourList />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        element: <PrivateTouristRoute />,
+        children: [
+          {
+            path: Routes.TOURIST_PROFILE,
+            element: <TouristProfile />,
+          },
+        ],
+      },
     ],
   },
 ]);
