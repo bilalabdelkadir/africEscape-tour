@@ -1,32 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserOutputDto } from './dtos/create-user.output.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAccountByEmail(email: string): Promise<Account> {
+  async findAccountByEmail(email: string) {
     return this.prisma.account.findUnique({
       where: {
         email,
       },
-      include: {
-        refreshTokens: true,
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        hashedPassword: true,
+        updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
         Tourist: true,
+        Agency: true,
       },
     });
   }
 
-  async findAccountById(id: string): Promise<Account> {
+  async findAccountById(id: string) {
     return this.prisma.account.findUnique({
       where: {
         id,
       },
-      include: {
-        refreshTokens: true,
+
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
         Tourist: true,
+        Agency: true,
+        refreshTokens: true,
       },
     });
   }
@@ -54,6 +67,9 @@ export class UsersService {
         email: true,
         createdAt: true,
         updatedAt: true,
+        accountType: true,
+        isEmailVerified: true,
+        refreshTokens: true,
         Tourist: true,
       },
     });

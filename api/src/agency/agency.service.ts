@@ -26,6 +26,8 @@ export class AgencyService {
       select: {
         id: true,
         email: true,
+        accountType: true,
+        isEmailVerified: true,
         createdAt: true,
         updatedAt: true,
         Agency: true,
