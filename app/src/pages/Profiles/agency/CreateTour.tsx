@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import moment from 'moment';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2Icon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { endpoints } from '@/lib/endponts';
+import { useMutate } from '@/hooks/queryHooks';
 
 enum TourPublishStatus {
   DRAFT = 'DRAFT',
@@ -90,6 +91,8 @@ const ALLOWED_IMAGE_TYPES = [
 ];
 
 const CreateTour = () => {
+  const { createTour } = endpoints;
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -103,16 +106,39 @@ const CreateTour = () => {
       pickUpAndDropOff: false,
       professionalGuide: false,
       transportByAirConditioned: false,
+      content: 'this is content of tour soai poi asdjfopasd foapsdfj asodifj',
+      title: 'this is title of tour',
+      price: '100000',
+      startDate: new Date(),
+      endDate: moment().add(21, 'days').toDate(),
+      postStatus: TourPublishStatus.DRAFT,
+      duration: '2 days 3 nights',
     },
   });
 
+  const onError = (errors: any) => {
+    console.log(errors);
+  };
+
+  const onSuccess = (data: any) => {
+    console.log(data);
+  };
+
+  const { mutate, isLoading } = useMutate(
+    createTour,
+    'POST',
+    onError,
+    onSuccess
+  );
+
   const onSubmit = (data: FormValues) => {
     console.log(data);
+    console.log(typeof form.getValues('images'));
+    mutate(data);
   };
 
   return (
     <div className="flex  gap-3 w-full bg-none">
-      <div className="w-[25%] h-screen "></div>
       <Card className="w-[70%]">
         <CardHeader>
           <CardTitle>Create Tour</CardTitle>
@@ -517,7 +543,10 @@ const CreateTour = () => {
                 />
               </div>
               <div className="flex justify-end">
-                <Button type="submit">Create Tour</Button>
+                <Button type="submit" draggable={isLoading}>
+                  {isLoading && <Loader2Icon className="animate-spin mr-2" />}
+                  Create Tour
+                </Button>
               </div>
             </form>
           </Form>

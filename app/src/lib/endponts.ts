@@ -7,4 +7,9 @@ export const endpoints = {
   logout: `${BASE_URL}/auth/sign-out`,
   me: `${BASE_URL}/auth/tourist/me`,
   refreshToken: `${BASE_URL}/auth/refresh-token`,
+  createTour: `${BASE_URL}/tours`,
+  getTours: `${BASE_URL}/tours`,
+  getTour: (id: string) => `${BASE_URL}/tours/${id}`,
+  updateTour: (id: string) => `${BASE_URL}/tours/${id}`,
+  deleteTour: (id: string) => `${BASE_URL}/tours/${id}`,
 };
