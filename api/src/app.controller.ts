@@ -32,13 +32,15 @@ export class AppController {
   @Post('upload-pic')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const uploadedFile = await this.fileuploadService.uploadImage(file);
+    console.log(file);
+    return 'hey';
+    // const uploadedFile = await this.fileuploadService.uploadImage(file);
 
-    return {
-      url: uploadedFile.url,
-      type: 'IMAGE',
-      publicId: uploadedFile.public_id,
-      format: uploadedFile.format,
-    };
+    // return {
+    //   url: uploadedFile.url,
+    //   type: 'IMAGE',
+    //   publicId: uploadedFile.public_id,
+    //   format: uploadedFile.format,
+    // };
   }
 }

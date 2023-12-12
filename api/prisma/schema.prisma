@@ -150,10 +150,10 @@ model Tour {
   startDate   DateTime
   endDate     DateTime
   duration    String?
-  tags        Tags[]
   TourService TourService[]
   postStatus  TourPublishStatus @default(DRAFT)
   status      TourStatus        @default(UPCOMING)
+  Tags        Tags[]
 
   @@map("tours")
 }

@@ -9,6 +9,7 @@ import { LoggerMiddleware } from './utils/logger.middleware';
 import { MailModule } from './mail/mail.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { AgencyModule } from './agency/agency.module';
+import { ToursModule } from './tours/tours.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AgencyModule } from './agency/agency.module';
     MailModule,
     FileUploadModule,
     AgencyModule,
+    ToursModule,
   ],
   controllers: [AppController],
   providers: [AppService],
