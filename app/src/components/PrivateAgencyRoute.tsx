@@ -8,10 +8,6 @@ const PrivateAgencyRoute = () => {
   const prevLocation = useLocation();
 
   effect(() => {
-    console.log('agency main', agency.value);
-  });
-
-  effect(() => {
     if (!agency.value) return <Navigate to={Routes.TOURIST_LOGIN} />;
     if (agency.value?.accountType !== AccountType.AGENCY) {
       return (
