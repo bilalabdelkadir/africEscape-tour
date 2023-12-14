@@ -18,7 +18,11 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import moment from 'moment';
-import { Calendar as CalendarIcon, Loader2Icon } from 'lucide-react';
+import {
+  Calendar as CalendarIcon,
+  Loader2Icon,
+  PlusCircleIcon,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -32,7 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { endpoints } from '@/lib/endponts';
-import { useMutate, useMutateFormData } from '@/hooks/queryHooks';
+import { useMutateFormData } from '@/hooks/queryHooks';
 
 enum TourPublishStatus {
   DRAFT = 'DRAFT',
@@ -174,7 +178,7 @@ const CreateTour = () => {
 
   return (
     <div className="flex  gap-3 w-full bg-none">
-      <Card className="w-[70%]">
+      <Card className="w-full md:w-[70%]">
         <CardHeader>
           <CardTitle>Create Tour</CardTitle>
         </CardHeader>
@@ -200,7 +204,7 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex gap-3 flex-nowrap">
+              <div className="flex gap-3 md:flex-row flex-col w-full">
                 <FormField
                   control={form.control}
                   name="price"
@@ -211,7 +215,7 @@ const CreateTour = () => {
                         <Input
                           type="number"
                           placeholder="Example Price"
-                          className="w-full md:w-[200px]"
+                          className="w-full md:w-[140px]"
                           min={1}
                           max={1000000000}
                           {...field}
@@ -225,7 +229,7 @@ const CreateTour = () => {
                   control={form.control}
                   name="startDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col ">
+                    <FormItem className="flex flex-col w-full md:w-[35%]">
                       <FormLabel className="mb-2">Start Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -233,7 +237,7 @@ const CreateTour = () => {
                             <Button
                               variant={'outline'}
                               className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
+                                'w-full md:w-[240px] pl-3 text-left font-normal',
                                 !field.value && 'text-muted-foreground'
                               )}
                             >
@@ -267,7 +271,7 @@ const CreateTour = () => {
                   control={form.control}
                   name="endDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col w-full md:w-[35%]">
                       <FormLabel className="mb-2">End Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -275,7 +279,7 @@ const CreateTour = () => {
                             <Button
                               variant={'outline'}
                               className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
+                                'w-full md:w-[240px] pl-3 text-left font-normal',
                                 !field.value && 'text-muted-foreground'
                               )}
                             >
@@ -576,9 +580,13 @@ const CreateTour = () => {
                   }}
                 />
               </div>
-              <div className="flex justify-end">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading && <Loader2Icon className="animate-spin mr-2" />}
+              <div className="flex justify-start">
+                <Button type="submit" size={'lg'} disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2Icon className="animate-spin mr-2" />
+                  ) : (
+                    <PlusCircleIcon className=" mr-2" />
+                  )}
                   Create Tour
                 </Button>
               </div>
