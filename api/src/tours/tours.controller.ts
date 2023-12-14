@@ -21,16 +21,21 @@ import { AccountType } from '@prisma/client';
 import { CheckAccountType } from 'src/auth/decorators/AccountTypeChecker';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
+import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 
 @Controller('tours')
 export class ToursController {
-  constructor(private readonly toursService: ToursService) {}
+  constructor(
+    private readonly toursService: ToursService,
+    private readonly fileUpload: FileUploadService,
+  ) {}
 
   @Post()
   @UseGuards(AccessTokenGuard)
   @CheckAccountType(AccountType.AGENCY)
   @UseInterceptors(FilesInterceptor('images', 8))
-  create(
+  async create(
     @Body() createTourDto: CreateTourDto,
     @UploadedFiles() images: Express.Multer.File[],
     @Req() req: Request,
@@ -40,12 +45,32 @@ export class ToursController {
       console.log(images);
       console.log(req['user']);
 
-      return 'hey';
+      const uploadedImages: UploadApiResponse[] = [];
+
+      const createdData = await this.toursService.create(
+        createTourDto,
+        req['user'].id,
+      );
+
+      if (createdData) {
+        for (const image of images) {
+          const result = await this.fileUpload.uploadImage(image);
+          uploadedImages.push(result as UploadApiResponse);
+        }
+      }
+
+      const uploadedImagesData =
+        createdData &&
+        this.toursService.uploadImages(uploadedImages, createdData.id);
+
+      return {
+        ...createdData,
+        images: uploadedImagesData,
+      };
     } catch (error) {
       console.log(error);
       throw new HttpException(error, 500);
     }
-    // return this.toursService.create(createTourDto);
   }
 
   @Get()
@@ -54,9 +79,7 @@ export class ToursController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.toursService.findOne(+id);
-  }
+  findOne(@Param('id') id: string) {}
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTourDto: UpdateTourDto) {
