@@ -32,7 +32,7 @@ const LoginSchema = z.object({
   }),
   password: z
     .string()
-    .min(6, { message: 'Password must be atleast 6 characters' }),
+    .min(7, { message: 'Password must be atleast 6 characters' }),
 });
 
 type ILoginSchema = z.infer<typeof LoginSchema>;
