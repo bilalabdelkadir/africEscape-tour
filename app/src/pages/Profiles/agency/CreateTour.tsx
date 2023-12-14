@@ -1,4 +1,4 @@
-import { any, z } from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -177,7 +177,7 @@ const CreateTour = () => {
   };
 
   return (
-    <div className="flex  gap-3 w-full bg-none">
+    <div className="flex gap-3 w-full bg-none">
       <Card className="w-full md:w-[70%]">
         <CardHeader>
           <CardTitle>Create Tour</CardTitle>

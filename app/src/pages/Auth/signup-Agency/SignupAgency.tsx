@@ -35,7 +35,7 @@ import { useMutate } from '@/hooks/queryHooks';
 import { isUserLoggedIn, agency } from '@/global-state/user.globalstate';
 import { IAgencyAccount } from '@/types';
 
-const phoneRegExp = /^0[79]0?[1-9]\d{7}$/;
+export const phoneRegExp = /^0[79]0?[1-9]\d{7}$/;
 
 const SingupSchema = z
   .object({
@@ -51,10 +51,20 @@ const SingupSchema = z
     address: z.string().min(1, { message: 'Address is required' }),
     password: z
       .string()
-      .min(7, { message: 'Password must be atleast 6 characters' }),
+      .min(7, { message: 'Password must be at least 7 characters' })
+      .regex(/[a-z]/, {
+        message: 'Password must contain at least one lowercase letter',
+      })
+      .regex(/[A-Z]/, {
+        message: 'Password must contain at least one uppercase letter',
+      })
+      .regex(/\d/, { message: 'Password must contain at least one digit' })
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+        message: 'Password must contain at least one special character',
+      }),
     confirmPassword: z
       .string()
-      .min(7, { message: 'Password must be atleast 6 characters' }),
+      .min(7, { message: 'Password must be at least 7 characters' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
