@@ -71,68 +71,77 @@ export class CreateTourDto {
   @IsBoolean()
   audioGuide: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // foodAndDrinks: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  foodAndDrinks: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // lunch: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  lunch: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // privateTour: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  privateTour: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // specialActivities: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  specialActivities: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // entranceFees: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  entranceFees: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // gratuities: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  gratuities: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // pickUpAndDropOff: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  pickUpAndDropOff: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // professionalGuide: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  professionalGuide: boolean;
 
-  // @ApiProperty({
-  //   example: true,
-  //   description: 'The location of the tour',
-  // })
-  // @IsBoolean()
-  // transportByAirConditioned: boolean;
+  @Transform(({ value }) => Boolean(value))
+  @ApiProperty({
+    example: true,
+    description: 'The location of the tour',
+  })
+  @IsBoolean()
+  transportByAirConditioned: boolean;
 
   // @IsArray()
   // images: Express.Multer.File[];
