@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { any, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { endpoints } from '@/lib/endponts';
-import { useMutate } from '@/hooks/queryHooks';
+import { useMutate, useMutateFormData } from '@/hooks/queryHooks';
 
 enum TourPublishStatus {
   DRAFT = 'DRAFT',
@@ -58,22 +58,7 @@ const schema = z
     pickUpAndDropOff: z.boolean().default(false).optional(),
     professionalGuide: z.boolean().default(false).optional(),
     transportByAirConditioned: z.boolean().default(false).optional(),
-    images: z
-      .custom<FileList>((val) => val instanceof FileList, 'Required')
-      .refine((files) => files.length > 0, `Required`)
-      .refine((files) => files.length <= 5, `Maximum of 5 images are allowed.`)
-      .refine(
-        (files) =>
-          Array.from(files).every((file) => file.size <= MAX_IMAGE_SIZE),
-        `Each file size should be less than 5 MB.`
-      )
-      .refine(
-        (files) =>
-          Array.from(files).every((file) =>
-            ALLOWED_IMAGE_TYPES.includes(file.type)
-          ),
-        'Only these types are allowed .jpg, .jpeg, .png and .webp'
-      ),
+    images: z.any().optional(),
   })
   .refine((data) => data.startDate < data.endDate, {
     message: 'Start Date must be before End Date',
@@ -124,17 +109,67 @@ const CreateTour = () => {
     console.log(data);
   };
 
-  const { mutate, isLoading } = useMutate(
+  const { mutate, isLoading } = useMutateFormData(
     createTour,
     'POST',
     onError,
     onSuccess
   );
 
+  const imageValidation = (files: FileList | null) => {
+    if (!files) return true;
+
+    for (const file of files) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        throw new Error('Invalid image type');
+      }
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        throw new Error('Image size is too large');
+      }
+    }
+
+    return true;
+  };
+
   const onSubmit = (data: FormValues) => {
-    console.log(data);
-    console.log(typeof form.getValues('images'));
-    mutate(data);
+    const formData = new FormData();
+
+    // Append other form fields
+    formData.append('title', data.title);
+    formData.append('price', data.price);
+    formData.append('startDate', data.startDate.toISOString()); // Convert date to string
+    formData.append('endDate', data.endDate.toISOString()); // Convert date to string
+    formData.append('duration', data.duration);
+    formData.append('content', data.content);
+    formData.append('postStatus', data.postStatus);
+
+    // Convert boolean values to strings
+    formData.append('audioGuide', String(data.audioGuide));
+    formData.append('foodAndDrinks', String(data.foodAndDrinks));
+    formData.append('lunch', String(data.lunch));
+    formData.append('privateTour', String(data.privateTour));
+    formData.append('specialActivities', String(data.specialActivities));
+    formData.append('entranceFees', String(data.entranceFees));
+    formData.append('gratuities', String(data.gratuities));
+    formData.append('pickUpAndDropOff', String(data.pickUpAndDropOff));
+    formData.append('professionalGuide', String(data.professionalGuide));
+    formData.append(
+      'transportByAirConditioned',
+      String(data.transportByAirConditioned)
+    );
+
+    if (!imageValidation(data.images)) {
+      alert('Invalid image');
+      return;
+    }
+
+    for (const file of data.images) {
+      formData.append('images', file);
+    }
+
+    console.log('form data', formData);
+    mutate(formData);
   };
 
   return (
@@ -165,7 +200,7 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-nowrap">
                 <FormField
                   control={form.control}
                   name="price"
@@ -176,7 +211,7 @@ const CreateTour = () => {
                         <Input
                           type="number"
                           placeholder="Example Price"
-                          className="w-[200px]"
+                          className="w-full md:w-[200px]"
                           min={1}
                           max={1000000000}
                           {...field}
@@ -190,7 +225,7 @@ const CreateTour = () => {
                   control={form.control}
                   name="startDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col ">
                       <FormLabel className="mb-2">Start Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -525,7 +560,6 @@ const CreateTour = () => {
                     return (
                       <FormItem>
                         <FormLabel>Images</FormLabel>
-                        {/* File Upload */}
                         <FormControl>
                           <Input
                             type="file"
@@ -543,7 +577,7 @@ const CreateTour = () => {
                 />
               </div>
               <div className="flex justify-end">
-                <Button type="submit" draggable={isLoading}>
+                <Button type="submit" disabled={isLoading}>
                   {isLoading && <Loader2Icon className="animate-spin mr-2" />}
                   Create Tour
                 </Button>
