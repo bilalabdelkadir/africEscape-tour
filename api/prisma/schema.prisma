@@ -133,41 +133,39 @@ enum TourStatus {
 }
 
 model Tour {
-  id          String            @id @default(uuid())
-  title       String
-  content     String            @db.Text
-  price       Float
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  Agency      Agency            @relation(fields: [agencyId], references: [id])
-  agencyId    String
-  slug        String            @unique
-  TourImage   TourImage[]
-  guides      AgencyEmployee[]
-  tourists    Tourist[]
-  leadGuide   AgencyEmployee?   @relation("lead-guide", fields: [leadGuideId], references: [id])
-  leadGuideId String?
-  startDate   DateTime
-  endDate     DateTime
-  duration    String?
-  TourService TourService[]
-  postStatus  TourPublishStatus @default(DRAFT)
-  status      TourStatus        @default(UPCOMING)
-  Tags        Tags[]
+  id                        String           @id @default(uuid())
+  title                     String
+  content                   String           @db.Text
+  price                     Float
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+  Agency                    Agency           @relation(fields: [agencyId], references: [id])
+  agencyId                  String
+  slug                      String           @unique
+  TourImages                TourImage[]
+  guides                    AgencyEmployee[]
+  tourists                  Tourist[]
+  leadGuide                 AgencyEmployee?  @relation("lead-guide", fields: [leadGuideId], references: [id])
+  leadGuideId               String?
+  startDate                 DateTime
+  endDate                   DateTime
+  duration                  String?
+  audioGuide                Boolean          @default(false)
+  foodAndDrinks             Boolean          @default(false)
+  lunch                     Boolean          @default(false)
+  privateTour               Boolean          @default(false)
+  specialActivities         Boolean          @default(false)
+  entranceFees              Boolean          @default(false)
+  gratuities                Boolean          @default(false)
+  pickUpAndDropOff          Boolean          @default(false)
+  professionalGuide         Boolean          @default(false)
+  transportByAirConditioned Boolean          @default(false)
+
+  postStatus TourPublishStatus @default(DRAFT)
+  status     TourStatus        @default(UPCOMING)
+  Tags       Tags[]
 
   @@map("tours")
-}
-
-model TourService {
-  id         String   @id @default(uuid())
-  name       String   @unique
-  isProvided Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Tour       Tour?    @relation(fields: [tourId], references: [id])
-  tourId     String?
-
-  @@map("tour_services")
 }
 
 model Tags {

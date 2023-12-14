@@ -11,7 +11,7 @@ export class FileUploadService {
     // const stream = toStream(file.buffer);
     return new Promise((resolve, reject) => {
       const upload = v2.uploader.upload_stream(
-        { folder: 'profileImage' },
+        { folder: 'AfricescapeImages' },
         (error, result) => {
           if (error) return reject(error);
           resolve(result);
