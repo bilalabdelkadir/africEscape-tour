@@ -85,8 +85,37 @@ export const useMutate = (
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      timeout: 5000,
+      timeout: 15000,
     };
+
+    return await axios(config).then((res) => res.data);
+  };
+
+  return useMutation({ mutationFn, onSuccess, onError });
+};
+
+export const useMutateFormData = (
+  url: string,
+  method: Method = 'post',
+  onError?: (error: any) => void,
+  onSuccess?: (data: any) => void
+) => {
+  const token = localStorage.getItem('token');
+
+  // upload formData to server
+  const mutationFn = async (data?: any) => {
+    const config: AxiosRequestConfig = {
+      method,
+      url,
+      data,
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 50000,
+    };
+
     return await axios(config).then((res) => res.data);
   };
 
