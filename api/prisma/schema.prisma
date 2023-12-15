@@ -106,6 +106,10 @@ model AgencyEmployee {
   phoneNumber   String       @unique
   avatar        String?
   role          EmployeeRole @default(GUIDE)
+  stateRegion   String?
+  country       String
+  city          String?
+  address       String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   Agency        Agency       @relation(fields: [agencyId], references: [id])
@@ -117,6 +121,22 @@ model AgencyEmployee {
   TourGuide     Tour[]       @relation("lead-guide")
 
   @@map("tour_company_employees")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model EmployeeInvitation {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  token            String
+  expiresAt        DateTime
+  invitationStatus InvitationStatus @default(PENDING)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 enum TourPublishStatus {
