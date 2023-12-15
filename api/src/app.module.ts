@@ -10,6 +10,8 @@ import { MailModule } from './mail/mail.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { AgencyModule } from './agency/agency.module';
 import { ToursModule } from './tours/tours.module';
+import { EmployeeInvitationModule } from './employee_invitation/employee_invitation.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -19,11 +21,13 @@ import { ToursModule } from './tours/tours.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    EventEmitterModule.forRoot(),
     AuthModule,
     MailModule,
     FileUploadModule,
     AgencyModule,
     ToursModule,
+    EmployeeInvitationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
