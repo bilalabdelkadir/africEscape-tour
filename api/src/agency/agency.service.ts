@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SignupEmployeeDto } from 'src/auth/dto/create-auth.dto';
 
 @Injectable()
 export class AgencyService {
@@ -33,5 +34,41 @@ export class AgencyService {
         Agency: true,
       },
     });
+  }
+
+  async createEmployee(createEmployeeDto: SignupEmployeeDto) {
+    const newEmploye = await this.prisma.account.create({
+      data: {
+        email: createEmployeeDto.email,
+        accountType: 'AGENCY_EMPLOYEE',
+        hashedPassword: createEmployeeDto.password,
+        isEmailVerified: true,
+        AgencyEmployee: {
+          create: {
+            firstName: createEmployeeDto.firstName,
+            lastName: createEmployeeDto.lastName,
+            email: createEmployeeDto.email,
+            phoneNumber: createEmployeeDto.phoneNumber,
+            agencyId: createEmployeeDto.agencyId,
+            country: createEmployeeDto.country,
+            city: createEmployeeDto.city,
+            address: createEmployeeDto.address,
+            role: createEmployeeDto.role,
+            stateRegion: createEmployeeDto.stateRegion,
+          },
+        },
+      },
+      select: {
+        id: true,
+        email: true,
+        accountType: true,
+        isEmailVerified: true,
+        createdAt: true,
+        updatedAt: true,
+        AgencyEmployee: true,
+      },
+    });
+
+    return newEmploye;
   }
 }

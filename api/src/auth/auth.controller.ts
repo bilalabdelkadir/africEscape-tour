@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
 import {
   SigninTouristDto,
   SignupAgencyDto,
+  SignupEmployeeDto,
   SignupTouristDto,
 } from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
@@ -98,6 +99,46 @@ export class AuthController {
 
       const data = await this.authService.RegisterAgencyAccount(
         signupAgencyDto,
+        req,
+      );
+
+      const { refreshToken, ...agency } = data;
+
+      res.cookie('refresh-token', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      });
+
+      return agency;
+    } catch (err) {
+      Logger.log(err);
+      throw new HttpException(err.message, err.status);
+    }
+  }
+
+  @Post('sign-up/employee')
+  async SignupEmployee(
+    @Body() signupEmployeeDto: SignupEmployeeDto,
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+  ) {
+    try {
+      const userExists = await this.usersService.findAccountByEmail(
+        signupEmployeeDto.email,
+      );
+
+      if (userExists) {
+        throw new ConflictException(
+          'An account with this email already exists',
+        );
+      }
+
+      const data = await this.authService.RegisterEmployeeAccount(
+        signupEmployeeDto,
         req,
       );
 
