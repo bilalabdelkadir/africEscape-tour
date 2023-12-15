@@ -1,4 +1,11 @@
-import { ConflictException, Injectable, Logger, Param } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  Param,
+} from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-employee_invitation.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HashingService } from 'src/auth/hashing/hashing.service';
@@ -39,23 +46,22 @@ export class EmployeeInvitationService {
       throw new ConflictException('Invitation already sent');
     }
 
-    const generatedToken = Math.floor(100000 + Math.random() * 900000);
-
-    const hashedToken = await this.hashingService.hash(
-      generatedToken.toString(),
-    );
+    const generatedToken = Math.floor(
+      100000 + Math.random() * 900000,
+    ).toString();
 
     const invitation = await this.prisma.employeeInvitation.create({
       data: {
         email: createInvitation.email,
         expiresAt: new Date(new Date().setDate(new Date().getDate() + 3)),
-        token: hashedToken,
+        token: generatedToken,
+        agencyId: agency.id,
       },
     });
 
     this.eventEmitter.emit('invitation.created', {
       email: createInvitation.email,
-      token: hashedToken,
+      token: generatedToken,
       agencyName: agency.agencyName,
     });
 
@@ -74,12 +80,46 @@ export class EmployeeInvitationService {
       `Invitation created event received. Email: ${email}, Token: ${token}, Agency Name: ${agencyName}`,
     );
 
-    const sendInvitationEmail = await this.mailService.sendInvitation(
-      email,
-      token,
-      agencyName,
-    );
+    await this.mailService.sendInvitation(email, token, agencyName);
   }
 
-  async cancelInvitation(@Param('id') id: string) {}
+  async checkInvitation(token: string) {
+    try {
+      const invitation = await this.prisma.employeeInvitation.findFirst({
+        where: { token },
+      });
+
+      if (!invitation) {
+        return false;
+      }
+
+      if (invitation.expiresAt < new Date()) {
+        return false;
+      }
+
+      return {
+        email: invitation.email,
+        true: true,
+        agencyId: invitation.agencyId,
+      };
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
+  }
+
+  async cancelInvitation(@Param('id') id: string) {
+    const invitation = await this.prisma.employeeInvitation.findUnique({
+      where: { id },
+    });
+
+    if (!invitation) {
+      throw new ConflictException('Invitation not found');
+    }
+
+    const deletedInvitation = await this.prisma.employeeInvitation.delete({
+      where: { id },
+    });
+
+    return deletedInvitation;
+  }
 }

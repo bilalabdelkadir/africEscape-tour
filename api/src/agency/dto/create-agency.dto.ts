@@ -1,4 +1,6 @@
+import { PickType } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
+import { SignupEmployeeDto } from 'src/auth/dto/create-auth.dto';
 
 export class CreateAgencyDto {
   @IsEmail()

@@ -22,12 +22,7 @@ export class MailService {
   }
 
   async sendInvitation(email: string, token: string, agencyName: string) {
-    const baseUrl =
-      this.node_env === 'production'
-        ? this.configService.get<string>('PRODUCTION_URL')
-        : this.configService.get<string>('LOCAL_URL');
-
-    const url = `${baseUrl}/auth/accept-invitation?token=${token}`;
+    const url = `http://localhost:5173/agency/signup-employee/${token}`;
 
     await this.mailerService.sendMail({
       to: email,
