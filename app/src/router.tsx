@@ -17,6 +17,7 @@ import PublicPages from './components/PublicPages';
 import CreateTour from './pages/Profiles/agency/CreateTour';
 import TourList from './pages/Profiles/agency/TourList';
 import Employee from './pages/Profiles/agency/employee/Employee';
+import SignupEmployee from './pages/Auth/signup-employee/Signup-Employee';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
           { path: Routes.TOURIST_SIGN_UP, element: <SignupTourist /> },
           { path: Routes.AGENCY_SIGN_UP, element: <SignupAgency /> },
           { path: Routes.TOURIST_LOGIN, element: <LoginTourist /> },
+          {
+            path: Routes.SIGNUP_EMPLOYEE,
+            element: <SignupEmployee />,
+          },
         ],
       },
       {

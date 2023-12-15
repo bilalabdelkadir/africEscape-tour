@@ -24,18 +24,18 @@ enum EmployeeRole {
 }
 
 model Account {
-  id              String           @id @default(uuid())
-  email           String           @unique
+  id              String          @id @default(uuid())
+  email           String          @unique
   hashedPassword  String?
-  isEmailVerified Boolean          @default(false)
-  refreshTokens   RefreshTokens?   @relation(fields: [refreshTokenId], references: [id])
+  isEmailVerified Boolean         @default(false)
+  refreshTokens   RefreshTokens?  @relation(fields: [refreshTokenId], references: [id])
   refreshTokenId  String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  accountType     AccountType      @default(TOURIST)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  accountType     AccountType     @default(TOURIST)
   Tourist         Tourist?
   Agency          Agency?
-  AgencyEmployee  AgencyEmployee[]
+  AgencyEmployee  AgencyEmployee?
 
   @@map("accounts")
 }
@@ -79,21 +79,22 @@ enum StatusType {
 }
 
 model Agency {
-  id             String          @id @default(uuid())
-  agencyName     String
-  email          String          @unique
-  phoneNumber    String          @unique
-  agencyAvatar   String?
-  country        String
-  city           String
-  address        String?
-  status         StatusType      @default(APPROVED)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  Account        Account         @relation(fields: [accountId], references: [id])
-  accountId      String          @unique
-  Tour           Tour[]
-  AgencyEmployee AgencyEmployee?
+  id                 String               @id @default(uuid())
+  agencyName         String
+  email              String               @unique
+  phoneNumber        String               @unique
+  agencyAvatar       String?
+  country            String
+  city               String
+  address            String?
+  status             StatusType           @default(APPROVED)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  Account            Account              @relation(fields: [accountId], references: [id])
+  accountId          String               @unique
+  Tour               Tour[]
+  AgencyEmployee     AgencyEmployee?
+  EmployeeInvitation EmployeeInvitation[]
 
   @@map("tour_companies")
 }
@@ -115,7 +116,7 @@ model AgencyEmployee {
   Agency        Agency       @relation(fields: [agencyId], references: [id])
   agencyId      String       @unique
   Account       Account      @relation(fields: [accountId], references: [id])
-  accountId     String
+  accountId     String       @unique
   TourLeadGuide Tour?        @relation(fields: [tourId], references: [id])
   tourId        String?
   TourGuide     Tour[]       @relation("lead-guide")
@@ -134,6 +135,8 @@ model EmployeeInvitation {
   email            String           @unique
   token            String
   expiresAt        DateTime
+  Agency           Agency?          @relation(fields: [agencyId], references: [id])
+  agencyId         String?
   invitationStatus InvitationStatus @default(PENDING)
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
