@@ -93,7 +93,7 @@ model Agency {
   Account            Account              @relation(fields: [accountId], references: [id])
   accountId          String               @unique
   Tour               Tour[]
-  AgencyEmployee     AgencyEmployee?
+  AgencyEmployee     AgencyEmployee[]
   EmployeeInvitation EmployeeInvitation[]
 
   @@map("tour_companies")
@@ -114,7 +114,7 @@ model AgencyEmployee {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   Agency        Agency       @relation(fields: [agencyId], references: [id])
-  agencyId      String       @unique
+  agencyId      String
   Account       Account      @relation(fields: [accountId], references: [id])
   accountId     String       @unique
   TourLeadGuide Tour?        @relation(fields: [tourId], references: [id])
