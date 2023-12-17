@@ -1,4 +1,5 @@
 const BASE_URL = 'http://localhost:8000/v1';
+import { agency } from '@/global-state/user.globalstate';
 
 export const endpoints = {
   signupTourist: `${BASE_URL}/auth/sign-up/tourist`,
@@ -15,4 +16,5 @@ export const endpoints = {
   deleteTour: (id: string) => `${BASE_URL}/tours/${id}`,
   checkInvitation: (token: string) =>
     `${BASE_URL}/employee-invitation/check-invitation/${token}`,
+  getAllEmployees: (id: string) => `${BASE_URL}/agency/employees/${id}`,
 };
