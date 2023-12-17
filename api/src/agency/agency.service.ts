@@ -71,4 +71,30 @@ export class AgencyService {
 
     return newEmploye;
   }
+
+  async findEmployees(agencyId: string) {
+    const employes = await this.prisma.agencyEmployee.findMany({
+      where: { agencyId },
+      include: {
+        Agency: {
+          select: {
+            id: true,
+            agencyName: true,
+            agencyAvatar: true,
+            country: true,
+            city: true,
+          },
+        },
+        Account: {
+          select: {
+            id: true,
+            accountType: true,
+            isEmailVerified: true,
+          },
+        },
+      },
+    });
+
+    return employes;
+  }
 }
