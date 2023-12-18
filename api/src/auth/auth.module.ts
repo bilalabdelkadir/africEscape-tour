@@ -19,5 +19,6 @@ import { AgencyModule } from 'src/agency/agency.module';
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
+  exports: [HashingService, JwtGeneratorService],
 })
 export class AuthModule {}

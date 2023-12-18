@@ -10,10 +10,15 @@ export const useFetchQuery = <ITYPE,>(
   onSuccess?: (data: any) => void,
   queryParams?: Record<string, any>
 ) => {
+  const token = localStorage.getItem('token');
+
   const queryFn = async () => {
     return await axios
       .get(url, {
         params: queryParams,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => res.data as ITYPE);
   };

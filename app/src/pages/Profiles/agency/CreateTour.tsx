@@ -1,4 +1,4 @@
-import { any, z } from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,11 +37,24 @@ import {
 } from '@/components/ui/select';
 import { endpoints } from '@/lib/endponts';
 import { useMutateFormData } from '@/hooks/queryHooks';
+import { useQueryClient } from 'react-query';
+import { useEffect } from 'react';
+import { IEmployeeData } from '@/types';
+import MultiSelect from 'react-select';
+import makeAnimated from 'react-select/animated';
+
+const animatedComponents = makeAnimated();
 
 enum TourPublishStatus {
   DRAFT = 'DRAFT',
   PUBLISHED = 'PUBLISHED',
 }
+
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
+];
 
 const schema = z
   .object({
@@ -63,6 +76,8 @@ const schema = z
     professionalGuide: z.boolean().default(false).optional(),
     transportByAirConditioned: z.boolean().default(false).optional(),
     images: z.any().optional(),
+    leadGuideId: z.string().optional(),
+    guideIds: z.array(z.string()).optional(),
   })
   .refine((data) => data.startDate < data.endDate, {
     message: 'Start Date must be before End Date',
@@ -137,6 +152,7 @@ const CreateTour = () => {
   };
 
   const onSubmit = (data: FormValues) => {
+    console.log('data', data);
     const formData = new FormData();
 
     // Append other form fields
@@ -147,6 +163,14 @@ const CreateTour = () => {
     formData.append('duration', data.duration);
     formData.append('content', data.content);
     formData.append('postStatus', data.postStatus);
+    if (data.leadGuideId) {
+      formData.append('leadGuideId', data.leadGuideId);
+    }
+    if (data.guideIds) {
+      for (const guideId of data.guideIds) {
+        formData.append('guideIds', guideId);
+      }
+    }
 
     // Convert boolean values to strings
     formData.append('audioGuide', String(data.audioGuide));
@@ -173,11 +197,20 @@ const CreateTour = () => {
     }
 
     console.log('form data', formData);
-    mutate(formData);
+    // mutate(formData);
   };
 
+  const queryClient = useQueryClient();
+
+  const employeeList =
+    queryClient.getQueryData<IEmployeeData[]>(['getAllEmployees']) ?? [];
+
+  useEffect(() => {
+    console.log('employee list', employeeList);
+  }, [employeeList]);
+
   return (
-    <div className="flex  gap-3 w-full bg-none">
+    <div className="flex gap-3 w-full bg-none">
       <Card className="w-full md:w-[70%]">
         <CardHeader>
           <CardTitle>Create Tour</CardTitle>
@@ -339,7 +372,65 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="guideIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Guide</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        closeMenuOnSelect={false}
+                        components={animatedComponents}
+                        isMulti
+                        options={
+                          employeeList?.map((employee: IEmployeeData) => ({
+                            value: employee.id,
+                            label: employee.firstName + ' ' + employee.lastName,
+                          })) ?? []
+                        }
+                        onChange={(selectedOptions) => {
+                          // Extract the values from selected options
+                          const selectedValues = selectedOptions.map(
+                            (option: any) => option.value
+                          );
+                          // Update the form field value
+                          field.onChange(selectedValues);
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               <div className="flex gap-3">
+                <FormField
+                  control={form.control}
+                  name="leadGuideId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-[200px] pl-3 text-left font-normal">
+                              <SelectValue placeholder="Select Lead Guide" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {employeeList?.map((employee: IEmployeeData) => (
+                              <SelectItem value={employee.id}>
+                                {employee.firstName + ' ' + employee.lastName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="postStatus"
@@ -580,6 +671,7 @@ const CreateTour = () => {
                   }}
                 />
               </div>
+
               <div className="flex justify-start">
                 <Button type="submit" size={'lg'} disabled={isLoading}>
                   {isLoading ? (

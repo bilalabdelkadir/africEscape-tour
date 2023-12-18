@@ -5,6 +5,7 @@ export const Routes = {
   TOURIST_PROFILE: '/tourist/profile',
   AGENCY_LOGIN: '/agency/login',
   AGENCY_SIGN_UP: '/agency/sign-up',
+  SIGNUP_EMPLOYEE: '/agency/signup-employee/:token',
   AGENCY_PROFILE: '/agency/profile',
   DESTINATIONS: '/destinations',
   DESTINATIONPAGE: '/destination/:id',

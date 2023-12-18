@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EmployeeRole } from '@prisma/client';
 import {
   IsEmail,
+  IsEnum,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
@@ -174,4 +177,90 @@ export class SignupAgencyDto {
     message: 'Please provide a valid street',
   })
   address: string;
+}
+
+export class SignupEmployeeDto {
+  @ApiProperty({
+    example: 'John',
+  })
+  @IsString()
+  firstName: string;
+
+  @ApiProperty({
+    example: 'Doe',
+  })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiProperty({
+    example: 'zeemades@gmail.com',
+  })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    example: 'Strong2030??',
+    description: 'The password of the company',
+    minLength: 7,
+    format: 'password',
+  })
+  @IsStrongPassword(
+    {
+      minLength: 7,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+      minNumbers: 1,
+    },
+    {
+      message:
+        'Password must be at least 7 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol',
+    },
+  )
+  password: string;
+
+  @ApiProperty({
+    example: '+251911111111',
+  })
+  // @IsPhoneNumber('ET')
+  @IsString()
+  phoneNumber: string;
+
+  @ApiProperty({
+    example: 'Addis Ababa',
+  })
+  @IsOptional()
+  @IsString()
+  stateRegion?: string;
+
+  @ApiProperty({
+    example: 'Ethiopia',
+  })
+  @IsString()
+  country: string;
+
+  @ApiProperty({
+    example: 'Addis Ababa',
+  })
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiProperty({
+    example: 'Addis Ababa',
+  })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiProperty({
+    example: EmployeeRole.GUIDE,
+    enum: EmployeeRole,
+  })
+  @IsEnum(EmployeeRole)
+  role: EmployeeRole;
+
+  @IsString()
+  agencyId: string;
 }
