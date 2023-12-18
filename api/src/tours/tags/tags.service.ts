@@ -22,6 +22,18 @@ export class TagsService {
   }
 
   /**
+   * Creates new tags with the given names.
+   * @param names - The names of the tags.
+   * @returns A promise that resolves to the created tags.
+   */
+  async createTags(names: string[]) {
+    return await this.prisma.tags.createMany({
+      data: names.map((name) => ({ name })),
+      skipDuplicates: true,
+    });
+  }
+
+  /**
    * Retrieves all tags.
    * @returns A promise that resolves to an array of tags.
    */
