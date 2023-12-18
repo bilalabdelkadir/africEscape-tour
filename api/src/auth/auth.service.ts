@@ -8,6 +8,7 @@ import {
 import {
   SigninTouristDto,
   SignupAgencyDto,
+  SignupEmployeeDto,
   SignupTouristDto,
 } from './dto/create-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -138,6 +139,60 @@ export class AuthService {
     } catch (err) {
       console.log(err);
       throw new HttpException(err, 500);
+    }
+  }
+
+  async RegisterEmployeeAccount(
+    signupEmployeeDto: SignupEmployeeDto,
+    req: Request,
+  ) {
+    try {
+      const hashedPassword = await this.hashingService.hash(
+        signupEmployeeDto.password,
+      );
+      const newEmployee = await this.agencyService.createEmployee({
+        ...signupEmployeeDto,
+        password: hashedPassword,
+      });
+
+      const { accessToken, refreshToken, refreshTokenIdentifier } =
+        await this.jwtGeneratorService.generateBothTokens(
+          newEmployee.id,
+          newEmployee.email,
+          newEmployee.accountType,
+        );
+
+      if (accessToken === undefined || refreshToken === undefined) {
+        throw new HttpException('Failed to autheticate', 500);
+      }
+      const hasedRefreshToken = await this.hashingService.hash(refreshToken);
+
+      const employeeRequestInfo = this.parseUserAgent(
+        req.headers['user-agent'],
+      );
+
+      const refreshTokenExpiresAt = new Date(
+        new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+
+      await this.usersService.createRefreshToken(
+        newEmployee.id,
+        refreshTokenIdentifier,
+        hasedRefreshToken,
+        refreshTokenExpiresAt,
+        employeeRequestInfo.operatingSystem,
+        employeeRequestInfo.browser,
+        employeeRequestInfo.device,
+        employeeRequestInfo.agent,
+      );
+
+      return {
+        ...newEmployee,
+        accessToken,
+        refreshToken,
+      };
+    } catch (err) {
+      throw err;
     }
   }
 
@@ -301,7 +356,6 @@ export class AuthService {
         this.parseUserAgent(userAgent).agent,
       );
 
-      // then we send the new access token and refresh token
       return {
         accessToken,
         refreshToken: newRefreshToken,
