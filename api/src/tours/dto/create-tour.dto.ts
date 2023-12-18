@@ -4,6 +4,7 @@ import {
   IsDate,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
@@ -62,6 +63,14 @@ export class CreateTourDto {
   @Transform(({ value }) => Number(value))
   @IsNumber()
   price: number;
+
+  // @ApiProperty({
+  //   example: '234444444444',
+  //   description: 'the id of the lead guide',
+  // })
+  // @IsOptional()
+  // @IsString()
+  // leadGuideId?: string;
 
   @Transform(({ value }) => Boolean(value))
   @ApiProperty({

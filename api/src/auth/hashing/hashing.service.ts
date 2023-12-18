@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Global, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
+@Global()
 @Injectable()
 export class HashingService {
   async hash(password: string): Promise<string> {
