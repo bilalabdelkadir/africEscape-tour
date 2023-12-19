@@ -81,8 +81,17 @@ export class ToursService {
     }
   }
 
-  findAll() {
-    return `This action returns all tours`;
+  async findAll() {
+    return await this.prisma.tour.findMany({
+      include: {
+        TourImages: true,
+        Agency: true,
+        Tags: true,
+        guides: true,
+        leadGuide: true,
+        tourists: true,
+      },
+    });
   }
 
   findOne(id: number) {
