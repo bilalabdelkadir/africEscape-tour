@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Routes } from '@/constants/routes';
 import { useMutate } from '@/hooks/queryHooks';
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { AccountType, ILoginResponse } from '@/types/tourist.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';

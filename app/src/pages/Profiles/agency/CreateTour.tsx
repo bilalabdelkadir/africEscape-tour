@@ -22,7 +22,6 @@ import {
   Calendar as CalendarIcon,
   Loader2Icon,
   PlusCircleIcon,
-  X as DeleteImage,
 } from 'lucide-react';
 import React from 'react';
 import { cn } from '@/lib/utils';
@@ -36,13 +35,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { endpoints } from '@/lib/endponts';
-import { useMutateFormData } from '@/hooks/queryHooks';
+import { endpoints } from '@/lib/endpoints';
+import { useMutate, useMutateFormData } from '@/hooks/queryHooks';
 import { useEffect, useState } from 'react';
-import { IEmployeeData } from '@/types';
+import { IEmployeeData, ITag } from '@/types';
 import MultiSelect from 'react-select';
 import makeAnimated from 'react-select/animated';
 import useEmployee from '@/hooks/useEmployee';
+import useTags from '@/hooks/useTags';
+import CreatableSelect from 'react-select/creatable';
+import { countries } from '@/constants/countries';
+import { da } from 'date-fns/locale';
 
 const animatedComponents = makeAnimated();
 
@@ -70,9 +73,15 @@ const schema = z
     pickUpAndDropOff: z.boolean().default(false).optional(),
     professionalGuide: z.boolean().default(false).optional(),
     transportByAirConditioned: z.boolean().default(false).optional(),
-    images: z.any().optional(),
+    images: z.any(),
     leadGuideId: z.string().min(3).max(40),
     guideIds: z.array(z.string()).optional(),
+    tags: z.array(z.string()).optional(),
+    country: z.string().min(1, { message: 'Country is required' }),
+    stateRegion: z
+      .string()
+      .min(1, { message: 'State/Region is required' })
+      .optional(),
   })
   .refine((data) => data.startDate < data.endDate, {
     message: 'Start Date must be before End Date',
@@ -90,9 +99,10 @@ const ALLOWED_IMAGE_TYPES = [
 ];
 
 const CreateTour = () => {
-  const { createTour } = endpoints;
+  const { createTour, createTag } = endpoints;
   const [uploadedImages, setUploadedImages] = useState<FileList>();
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const { data: tags, isFetching: isFetchingTags } = useTags();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -114,6 +124,7 @@ const CreateTour = () => {
       endDate: moment().add(21, 'days').toDate(),
       postStatus: TourPublishStatus.DRAFT,
       duration: '2 days 3 nights',
+      // country: 'Ethiopia',
     },
   });
 
@@ -147,6 +158,18 @@ const CreateTour = () => {
     }
   };
 
+  const { mutate: mutateTags, isLoading: isCreatingTag } = useMutate(
+    createTag,
+    'POST',
+    (error) => {
+      console.log(error);
+    },
+    (data: ITag) => {
+      console.log(data);
+      tags?.push(data);
+    }
+  );
+
   // const onImageRemove = (index: number) => {
   //   const images = [...previewImages];
   //   images.splice(index, 1);
@@ -168,6 +191,11 @@ const CreateTour = () => {
     }
 
     return true;
+  };
+
+  const handleCreateTags = (name: string) => {
+    if (!name) return;
+    mutateTags({ name });
   };
 
   const onSubmit = (data: FormValues) => {
@@ -196,6 +224,16 @@ const CreateTour = () => {
       }
     }
 
+    if (data.tags) {
+      const tagsIdsArray = Array.isArray(data.tags) ? data.tags : [data.tags];
+
+      console.log(Array.isArray(tagsIdsArray));
+
+      for (const tagsId of tagsIdsArray) {
+        formData.append('tags', tagsId);
+      }
+    }
+
     // Convert boolean values to strings
     formData.append('audioGuide', String(data.audioGuide));
     formData.append('foodAndDrinks', String(data.foodAndDrinks));
@@ -210,6 +248,11 @@ const CreateTour = () => {
       'transportByAirConditioned',
       String(data.transportByAirConditioned)
     );
+
+    formData.append('country', data.country);
+    if (data.stateRegion) {
+      formData.append('stateRegion', data.stateRegion);
+    }
 
     if (!imageValidation(data.images)) {
       alert('Invalid image');
@@ -420,6 +463,39 @@ const CreateTour = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Tags</FormLabel>
+                      <FormControl>
+                        <CreatableSelect
+                          isMulti
+                          isDisabled={isFetchingTags || isCreatingTag}
+                          isLoading={isFetchingTags}
+                          onCreateOption={handleCreateTags}
+                          onChange={(selectedOptions) => {
+                            // Extract the values from selected options
+                            const selectedValues = selectedOptions.map(
+                              (option: any) => option.value
+                            );
+                            // Update the form field value
+                            field.onChange(selectedValues);
+                          }}
+                          options={
+                            tags?.map((tag: ITag) => ({
+                              value: tag.id,
+                              label: tag.name,
+                            })) ?? []
+                          }
+                        />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
               <div className="flex gap-3">
                 <FormField
                   control={form.control}
@@ -451,6 +527,7 @@ const CreateTour = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="postStatus"
@@ -477,6 +554,51 @@ const CreateTour = () => {
                   )}
                 />
               </div>
+              <div className="flex flex-col md:flex-row justify-start w-full gap-2">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem className="w-full md:w-[45%]">
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className=" pl-3 text-left font-normal">
+                              <SelectValue placeholder="Select Country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {countries.map((country, index) => (
+                              <SelectItem value={country.value} key={index}>
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="stateRegion"
+                  render={({ field }) => (
+                    <FormItem className="w-full md:w-[45%]">
+                      <FormLabel>State/Region</FormLabel>
+                      <FormControl>
+                        <Input placeholder="AddisAbaba/oromia" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <div className="grid grid-cols-2 border  shadow-sm">
                 <FormField
                   control={form.control}
@@ -692,6 +814,7 @@ const CreateTour = () => {
                   );
                 }}
               />
+
               <div className="flex gap-3 flex-col w-full flex-wrap md:flex-row">
                 {previewImages.map((image, index) => (
                   <div className="relative w-full h-36 md:w-1/4 md:h-48">
