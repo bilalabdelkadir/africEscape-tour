@@ -22,8 +22,9 @@ import {
   Calendar as CalendarIcon,
   Loader2Icon,
   PlusCircleIcon,
+  X as DeleteImage,
 } from 'lucide-react';
-
+import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -37,11 +38,11 @@ import {
 } from '@/components/ui/select';
 import { endpoints } from '@/lib/endponts';
 import { useMutateFormData } from '@/hooks/queryHooks';
-import { useQueryClient } from 'react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { IEmployeeData } from '@/types';
 import MultiSelect from 'react-select';
 import makeAnimated from 'react-select/animated';
+import useEmployee from '@/hooks/useEmployee';
 
 const animatedComponents = makeAnimated();
 
@@ -50,19 +51,13 @@ enum TourPublishStatus {
   PUBLISHED = 'PUBLISHED',
 }
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
-
 const schema = z
   .object({
     title: z.string().min(3).max(30),
     price: z.string().min(3).max(30),
     startDate: z.date(),
     endDate: z.date(),
-    content: z.string().min(3).max(500),
+    content: z.string().min(3).max(2000),
     postStatus: z.nativeEnum(TourPublishStatus),
     duration: z.string().min(3).max(30),
     audioGuide: z.boolean().default(false).optional(),
@@ -76,7 +71,7 @@ const schema = z
     professionalGuide: z.boolean().default(false).optional(),
     transportByAirConditioned: z.boolean().default(false).optional(),
     images: z.any().optional(),
-    leadGuideId: z.string().optional(),
+    leadGuideId: z.string().min(3).max(40),
     guideIds: z.array(z.string()).optional(),
   })
   .refine((data) => data.startDate < data.endDate, {
@@ -96,6 +91,8 @@ const ALLOWED_IMAGE_TYPES = [
 
 const CreateTour = () => {
   const { createTour } = endpoints;
+  const [uploadedImages, setUploadedImages] = useState<FileList>();
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -135,6 +132,28 @@ const CreateTour = () => {
     onSuccess
   );
 
+  useEffect(() => {
+    if (uploadedImages) {
+      const images = Array.from(uploadedImages).map((image) =>
+        URL.createObjectURL(image)
+      );
+      setPreviewImages(images);
+    }
+  }, [uploadedImages]);
+
+  const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setUploadedImages(e.target.files);
+    }
+  };
+
+  // const onImageRemove = (index: number) => {
+  //   const images = [...previewImages];
+  //   images.splice(index, 1);
+  //   setPreviewImages(images);
+  //   setUploadedImages;
+  // };
+
   const imageValidation = (files: FileList | null) => {
     if (!files) return true;
 
@@ -163,11 +182,16 @@ const CreateTour = () => {
     formData.append('duration', data.duration);
     formData.append('content', data.content);
     formData.append('postStatus', data.postStatus);
-    if (data.leadGuideId) {
-      formData.append('leadGuideId', data.leadGuideId);
-    }
+    formData.append('leadGuideId', data.leadGuideId);
+
     if (data.guideIds) {
-      for (const guideId of data.guideIds) {
+      const guideIdsArray = Array.isArray(data.guideIds)
+        ? data.guideIds
+        : [data.guideIds];
+
+      console.log(Array.isArray(guideIdsArray));
+
+      for (const guideId of guideIdsArray) {
         formData.append('guideIds', guideId);
       }
     }
@@ -197,17 +221,10 @@ const CreateTour = () => {
     }
 
     console.log('form data', formData);
-    // mutate(formData);
+    mutate(formData);
   };
 
-  const queryClient = useQueryClient();
-
-  const employeeList =
-    queryClient.getQueryData<IEmployeeData[]>(['getAllEmployees']) ?? [];
-
-  useEffect(() => {
-    console.log('employee list', employeeList);
-  }, [employeeList]);
+  const employeeList = useEmployee();
 
   return (
     <div className="flex gap-3 w-full bg-none">
@@ -369,6 +386,7 @@ const CreateTour = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -384,7 +402,7 @@ const CreateTour = () => {
                         components={animatedComponents}
                         isMulti
                         options={
-                          employeeList?.map((employee: IEmployeeData) => ({
+                          employeeList.data?.map((employee: IEmployeeData) => ({
                             value: employee.id,
                             label: employee.firstName + ' ' + employee.lastName,
                           })) ?? []
@@ -408,7 +426,7 @@ const CreateTour = () => {
                   name="leadGuideId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>Lead Guide</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
@@ -420,11 +438,13 @@ const CreateTour = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {employeeList?.map((employee: IEmployeeData) => (
-                              <SelectItem value={employee.id}>
-                                {employee.firstName + ' ' + employee.lastName}
-                              </SelectItem>
-                            ))}
+                            {employeeList.data?.map(
+                              (employee: IEmployeeData) => (
+                                <SelectItem value={employee.id}>
+                                  {employee.firstName + ' ' + employee.lastName}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -615,7 +635,6 @@ const CreateTour = () => {
                   name="professionalGuide"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md  p-4">
-                      {/* <FormLabel>Audio Guide</FormLabel> */}
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -648,32 +667,60 @@ const CreateTour = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="images"
-                  render={({ field: { onChange }, ...field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Images</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => {
-                              onChange(e.target.files);
-                            }}
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    );
-                  }}
-                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field: { onChange }, ...field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Images</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={(e) => {
+                            onChange(e.target.files);
+                            onImageChange(e);
+                          }}
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="flex gap-3 flex-col w-full flex-wrap md:flex-row">
+                {previewImages.map((image, index) => (
+                  <div className="relative w-full h-36 md:w-1/4 md:h-48">
+                    <img
+                      src={image}
+                      alt="preview"
+                      className="object-cover w-full h-full rounded-md"
+                    />
+                    {/* <div className="absolute top-0 right-0">
+                      <Button
+                        variant="ghost"
+                        className="text-red-600 bg-white bg-opacity-30 "
+                        onClick={() => onImageRemove(index)}
+                        size={'icon'}
+                      >
+                        <DeleteImage />
+                      </Button>
+                    </div> */}
+                  </div>
+                ))}
               </div>
 
               <div className="flex justify-start">
-                <Button type="submit" size={'lg'} disabled={isLoading}>
+                <Button
+                  type="submit"
+                  size={'lg'}
+                  disabled={isLoading}
+                  className="w-full rounded-full"
+                >
                   {isLoading ? (
                     <Loader2Icon className="animate-spin mr-2" />
                   ) : (
