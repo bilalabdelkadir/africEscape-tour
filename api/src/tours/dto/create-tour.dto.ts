@@ -80,13 +80,25 @@ export class CreateTourDto {
   guideIds: string[] | string;
 
   @ApiProperty({
-    example: ['234444444444', '234444444444'],
-    description: 'the id of the tags',
+    example: 'Addis Ababa',
   })
   @IsOptional()
-  @IsArray()
+  @IsString()
+  stateRegion?: string;
+
+  @ApiProperty({
+    example: 'Ethiopia',
+  })
+  @IsString()
+  country: string;
+
+  @ApiProperty({
+    example: ['234444444444', '234444444444'],
+    description: 'the id of the guides',
+  })
+  @IsOptional()
   @IsString({ each: true })
-  tags: string[];
+  tags: string[] | string;
 
   @Transform(({ value }) => Boolean(value))
   @ApiProperty({

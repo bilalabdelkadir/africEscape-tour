@@ -23,12 +23,14 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
 import { UploadApiResponse } from 'cloudinary';
+import { TagsService } from './tags/tags.service';
 
 @Controller('tours')
 export class ToursController {
   constructor(
     private readonly toursService: ToursService,
     private readonly fileUpload: FileUploadService,
+    private readonly tagsService: TagsService,
   ) {}
 
   @Post()

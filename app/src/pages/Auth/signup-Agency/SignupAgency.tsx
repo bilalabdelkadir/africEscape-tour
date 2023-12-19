@@ -30,7 +30,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Loader2Icon, RewindIcon } from 'lucide-react';
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { useMutate } from '@/hooks/queryHooks';
 import { isUserLoggedIn, agency } from '@/global-state/user.globalstate';
 import { IAgencyAccount } from '@/types';
