@@ -22,7 +22,7 @@ import { useForm } from 'react-hook-form';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Loader2Icon, RewindIcon } from 'lucide-react';
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { useMutate } from '@/hooks/queryHooks';
 import { ITouristAccount } from '@/types/tourist.type';
 import { isUserLoggedIn, user } from '@/global-state/user.globalstate';

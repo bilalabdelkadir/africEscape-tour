@@ -19,16 +19,18 @@ import { UpdateTourDto } from './dto/update-tour.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { AccountType } from '@prisma/client';
 import { CheckAccountType } from 'src/auth/decorators/AccountTypeChecker';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import { UploadApiResponse } from 'cloudinary';
+import { TagsService } from './tags/tags.service';
 
 @Controller('tours')
 export class ToursController {
   constructor(
     private readonly toursService: ToursService,
     private readonly fileUpload: FileUploadService,
+    private readonly tagsService: TagsService,
   ) {}
 
   @Post()

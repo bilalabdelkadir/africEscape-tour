@@ -4,10 +4,14 @@ import { UpdateTourDto } from './dto/update-tour.dto';
 import { UploadApiResponse } from 'cloudinary';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as slugify from 'slugify';
+import { TagsService } from './tags/tags.service';
 
 @Injectable()
 export class ToursService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tagsService: TagsService,
+  ) {}
 
   async create(createTourDto: CreateTourDto, companyId: string) {
     const agency = await this.prisma.agency.findFirst({
@@ -19,14 +23,30 @@ export class ToursService {
     try {
       const newTour = await this.prisma.tour.create({
         data: {
-          ...createTourDto,
-          slug: slug,
-          Agency: {
-            connect: { id: agency.id },
+          ...CreateTourDto,
+          content: createTourDto.content,
+          slug,
+          price: createTourDto.price,
+          startDate: createTourDto.startDate,
+          endDate: createTourDto.endDate,
+          title: createTourDto.title,
+          agencyId: agency.id,
+          duration: createTourDto.duration,
+          postStatus: createTourDto.postStatus,
+          leadGuideId: createTourDto.leadGuideId,
+          guides: {
+            // if the tourguide is a string we only connect the id if it is an array we loop through the array and connect the ids
+            connect: Array.isArray(createTourDto.guideIds)
+              ? createTourDto.guideIds.map((guide) => ({ id: guide }))
+              : [{ id: createTourDto.guideIds }],
+          },
+          Tags: {
+            connect: Array.isArray(createTourDto.tags)
+              ? createTourDto.tags.map((tag) => ({ id: tag }))
+              : [{ id: createTourDto.tags }],
           },
         },
       });
-
       return newTour;
     } catch (error) {
       Logger.log(error);
@@ -52,8 +72,17 @@ export class ToursService {
     }
   }
 
-  findAll() {
-    return `This action returns all tours`;
+  async findAll() {
+    return await this.prisma.tour.findMany({
+      include: {
+        TourImages: true,
+        Agency: true,
+        Tags: true,
+        guides: true,
+        leadGuide: true,
+        tourists: true,
+      },
+    });
   }
 
   findOne(id: number) {

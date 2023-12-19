@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useMutate } from '@/hooks/queryHooks';
