@@ -1,4 +1,4 @@
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { ILoginResponse } from '@/types/tourist.type';
 import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios';
 import { useQuery, useMutation } from 'react-query';
