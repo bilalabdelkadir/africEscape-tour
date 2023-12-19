@@ -1,6 +1,6 @@
 import { IEmployeeData } from '@/types';
 import { useMutate } from '@/hooks/queryHooks';
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
@@ -129,7 +129,7 @@ const Employee = () => {
                 disabled={!validateEmail(email) || isLoading}
                 onClick={handleSendInvitation}
               >
-                {isCreating ? <Loader2Icon /> : null}
+                {isCreating || isRefetching ? <Loader2Icon /> : null}
                 Send Invitation
               </Button>
 

@@ -20,20 +20,6 @@ export class ToursService {
 
     const slug = slugify.default(createTourDto.title, { lower: true });
 
-    // const existingTags = await this.tagsService.getTagsByName(
-    //   createTourDto.tags,
-    // );
-
-    // const newTags = createTourDto.tags.filter(
-    //   (tag) => !existingTags.find((existingTag) => existingTag.name === tag),
-    // );
-
-    // const createdTags = newTags.length
-    //   ? await newTags.map((tag) => this.tagsService.createTag(tag))
-    //   : [];
-
-    // const tags = [...existingTags, ...createdTags];
-
     try {
       const newTour = await this.prisma.tour.create({
         data: {
@@ -53,6 +39,11 @@ export class ToursService {
             connect: Array.isArray(createTourDto.guideIds)
               ? createTourDto.guideIds.map((guide) => ({ id: guide }))
               : [{ id: createTourDto.guideIds }],
+          },
+          Tags: {
+            connect: Array.isArray(createTourDto.tags)
+              ? createTourDto.tags.map((tag) => ({ id: tag }))
+              : [{ id: createTourDto.tags }],
           },
         },
       });
