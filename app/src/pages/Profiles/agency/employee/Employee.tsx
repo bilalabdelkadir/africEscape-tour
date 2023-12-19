@@ -1,10 +1,9 @@
 import { IEmployeeData } from '@/types';
-import { useFetchQuery, useMutate } from '@/hooks/queryHooks';
+import { useMutate } from '@/hooks/queryHooks';
 import { endpoints } from '@/lib/endponts';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from './DataTable';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
-import { agency } from '@/global-state/user.globalstate';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -21,10 +20,10 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import useEmployee from '@/hooks/useEmployee';
 
 const Employee = () => {
-  const { getAllEmployees, sendInvitation } = endpoints;
-  // create email validation function here
+  const { sendInvitation } = endpoints;
 
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
@@ -33,17 +32,7 @@ const Employee = () => {
 
   const [email, setEmail] = useState('');
 
-  // @ts-ignore
-  const { data, isLoading, isRefetching } = useFetchQuery(
-    getAllEmployees(agency.value?.Agency.id as string),
-    ['getAllEmployees'],
-    (error) => {
-      console.log(error);
-    },
-    (data) => {
-      console.log(data);
-    }
-  );
+  const { data, isLoading, isRefetching } = useEmployee();
 
   const { mutate, isLoading: isCreating } = useMutate(
     sendInvitation,
