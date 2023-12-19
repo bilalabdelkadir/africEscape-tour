@@ -64,13 +64,41 @@ export class CreateTourDto {
   @IsNumber()
   price: number;
 
-  // @ApiProperty({
-  //   example: '234444444444',
-  //   description: 'the id of the lead guide',
-  // })
-  // @IsOptional()
-  // @IsString()
-  // leadGuideId?: string;
+  @ApiProperty({
+    example: '234444444444',
+    description: 'the id of the lead guide',
+  })
+  @IsString()
+  leadGuideId: string;
+
+  @ApiProperty({
+    example: ['234444444444', '234444444444'],
+    description: 'the id of the guides',
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  guideIds: string[] | string;
+
+  @ApiProperty({
+    example: 'Addis Ababa',
+  })
+  @IsOptional()
+  @IsString()
+  stateRegion?: string;
+
+  @ApiProperty({
+    example: 'Ethiopia',
+  })
+  @IsString()
+  country: string;
+
+  @ApiProperty({
+    example: ['234444444444', '234444444444'],
+    description: 'the id of the guides',
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  tags: string[] | string;
 
   @Transform(({ value }) => Boolean(value))
   @ApiProperty({

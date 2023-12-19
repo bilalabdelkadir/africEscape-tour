@@ -1,4 +1,4 @@
-import { endpoints } from '@/lib/endponts';
+import { endpoints } from '@/lib/endpoints';
 import { isUserLoggedIn, user, agency } from '@/global-state/user.globalstate';
 import { useNavigate } from 'react-router-dom';
 import { Routes } from '@/constants/routes';

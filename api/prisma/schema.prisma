@@ -173,6 +173,8 @@ model Tour {
   startDate                 DateTime
   endDate                   DateTime
   duration                  String?
+  stateRegion               String?
+  country                   String           @default("ethiopia")
   audioGuide                Boolean          @default(false)
   foodAndDrinks             Boolean          @default(false)
   lunch                     Boolean          @default(false)
