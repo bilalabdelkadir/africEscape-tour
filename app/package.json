@@ -37,6 +37,7 @@
     "react-router-dom": "^6.20.1",
     "react-select": "^5.8.0",
     "react-use": "^17.4.2",
+    "swiper": "^11.0.5",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
