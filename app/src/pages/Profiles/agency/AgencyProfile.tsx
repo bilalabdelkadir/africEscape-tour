@@ -19,8 +19,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useMedia } from 'react-use';
+import useTours from '@/hooks/useTours';
 
 const sidebar = [
+  {
+    title: 'Dashboard',
+    path: `${Routes.AGENCY_PROFILE}`,
+    icon: <MenuIcon size={20} />,
+  },
   {
     title: 'Create Tour',
     path: `${Routes.AGENCY_PROFILE}/create-tour`,
@@ -56,6 +62,8 @@ const AgencyProfile = () => {
     console.log('the value:', showSidebar);
     setShowSidebar(!showSidebar);
   };
+
+  useTours();
 
   return (
     <div className="flex">

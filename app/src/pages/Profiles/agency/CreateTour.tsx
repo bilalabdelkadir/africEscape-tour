@@ -45,8 +45,6 @@ import useEmployee from '@/hooks/useEmployee';
 import useTags from '@/hooks/useTags';
 import CreatableSelect from 'react-select/creatable';
 import { countries } from '@/constants/countries';
-import { da } from 'date-fns/locale';
-
 const animatedComponents = makeAnimated();
 
 enum TourPublishStatus {
@@ -103,6 +101,7 @@ const CreateTour = () => {
   const [uploadedImages, setUploadedImages] = useState<FileList>();
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const { data: tags, isFetching: isFetchingTags } = useTags();
+  const { data: employeeList, isFetching: isFetchingEmployee } = useEmployee();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -267,7 +266,12 @@ const CreateTour = () => {
     mutate(formData);
   };
 
-  const employeeList = useEmployee();
+  if (isFetchingEmployee || isFetchingTags)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2Icon className="animate-spin h-8 w-8 mx-auto" />
+      </div>
+    );
 
   return (
     <div className="flex gap-3 w-full bg-none">
@@ -445,7 +449,7 @@ const CreateTour = () => {
                         components={animatedComponents}
                         isMulti
                         options={
-                          employeeList.data?.map((employee: IEmployeeData) => ({
+                          employeeList?.map((employee: IEmployeeData) => ({
                             value: employee.id,
                             label: employee.firstName + ' ' + employee.lastName,
                           })) ?? []
@@ -514,13 +518,11 @@ const CreateTour = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {employeeList.data?.map(
-                              (employee: IEmployeeData) => (
-                                <SelectItem value={employee.id}>
-                                  {employee.firstName + ' ' + employee.lastName}
-                                </SelectItem>
-                              )
-                            )}
+                            {employeeList?.map((employee: IEmployeeData) => (
+                              <SelectItem value={employee.id}>
+                                {employee.firstName + ' ' + employee.lastName}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>
