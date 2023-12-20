@@ -85,8 +85,36 @@ export class ToursService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tour`;
+  async findById(id: string) {
+    return await this.prisma.tour.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        TourImages: true,
+        Agency: true,
+        Tags: true,
+        guides: true,
+        leadGuide: true,
+        tourists: true,
+      },
+    });
+  }
+
+  async findBySlug(slug: string) {
+    return await this.prisma.tour.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        TourImages: true,
+        Agency: true,
+        Tags: true,
+        guides: true,
+        leadGuide: true,
+        tourists: true,
+      },
+    });
   }
 
   update(id: number, updateTourDto: UpdateTourDto) {
