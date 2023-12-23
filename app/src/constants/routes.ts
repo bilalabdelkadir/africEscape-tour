@@ -8,7 +8,7 @@ export const Routes = {
   SIGNUP_EMPLOYEE: '/agency/signup-employee/:token',
   AGENCY_PROFILE: '/agency/profile',
   DESTINATIONS: '/destinations',
-  DESTINATIONPAGE: '/destination/:id',
+  DESTINATIONPAGE: '/destination/:slug',
   CONTACT: '/contact',
   ABOUT: '/about',
   BLOGS: '/blogs',
