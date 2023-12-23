@@ -14,6 +14,7 @@ export const endpoints = {
   createTour: `${BASE_URL}/tours`,
   getTours: `${BASE_URL}/tours`,
   getTour: (id: string) => `${BASE_URL}/tours/${id}`,
+  getTourBySlug: (slug: string) => `${BASE_URL}/tours/slug/${slug}`,
   updateTour: (id: string) => `${BASE_URL}/tours/${id}`,
   deleteTour: (id: string) => `${BASE_URL}/tours/${id}`,
   // tags

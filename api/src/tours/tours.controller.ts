@@ -81,7 +81,14 @@ export class ToursController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {}
+  async findOne(@Param('id') id: string) {
+    return await this.toursService.findById(id);
+  }
+
+  @Get('slug/:slug')
+  async findBySlug(@Param('slug') slug: string) {
+    return await this.toursService.findBySlug(slug);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTourDto: UpdateTourDto) {
