@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/sheet';
 import { useMedia } from 'react-use';
 import useTours from '@/hooks/useTours';
+import useEmployee from '@/hooks/useEmployee';
+import useTags from '@/hooks/useTags';
 
 const sidebar = [
   {
@@ -64,6 +66,8 @@ const AgencyProfile = () => {
   };
 
   useTours();
+  useTags();
+  useEmployee();
 
   return (
     <div className="flex">

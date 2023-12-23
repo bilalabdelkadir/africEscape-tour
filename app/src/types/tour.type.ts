@@ -1,4 +1,4 @@
-import { IAgencyProfile, ITag } from '.';
+import { IAgencyProfile, IEmployeeData, ITag } from '.';
 
 export interface ITour {
   id: string;
@@ -31,12 +31,12 @@ export interface ITour {
   TourImages: IImage[];
   Agency: IAgencyProfile;
   Tags: ITag[];
-  guides?: IAgencyProfile[] | null;
-  leadGuide: IAgencyProfile;
+  guides?: IEmployeeData[] | null;
+  leadGuide: IEmployeeData;
   tourists: [];
 }
 
-interface IImage {
+export interface IImage {
   id: string;
   url: string;
   alt: string;
