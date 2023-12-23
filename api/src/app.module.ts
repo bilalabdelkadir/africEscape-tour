@@ -12,6 +12,7 @@ import { AgencyModule } from './agency/agency.module';
 import { ToursModule } from './tours/tours.module';
 import { EmployeeInvitationModule } from './employee_invitation/employee_invitation.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AgencyModule,
     ToursModule,
     EmployeeInvitationModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

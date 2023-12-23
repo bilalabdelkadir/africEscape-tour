@@ -34,6 +34,7 @@ export class JwtGeneratorService {
     id: string,
     email: string,
     accountType: string,
+    profileId: string,
   ): Promise<BothTokensResponse> {
     const refreshTokenIdentifier = this.generateUUID();
     console.log('generateBothTokens', refreshTokenIdentifier);
@@ -42,12 +43,14 @@ export class JwtGeneratorService {
       email,
       refreshTokenIdentifier,
       accountType,
+      profileId,
     );
     const refreshToken = await this.generateRefreshToken(
       id,
       email,
       refreshTokenIdentifier,
       accountType,
+      profileId,
     );
 
     return {
@@ -62,10 +65,17 @@ export class JwtGeneratorService {
     email: string,
     refreshTokenIdentifierArg: string,
     accountType: string,
+    profileId: string,
   ): Promise<AccessTokenResponse> => {
     const refreshTokenIdentifier =
       refreshTokenIdentifierArg || this.generateUUID();
-    const payload = { id, email, refreshTokenIdentifier, accountType };
+    const payload = {
+      id,
+      email,
+      refreshTokenIdentifier,
+      accountType,
+      profileId,
+    };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('ACCESS_TOKEN_TTL')}`,
@@ -82,11 +92,18 @@ export class JwtGeneratorService {
     email: string,
     refreshTokenIdentifierArg: string,
     accountType: string,
+    profileId: string,
   ) => {
     const refreshTokenIdentifier =
       refreshTokenIdentifierArg || this.generateUUID();
 
-    const payload = { id, email, refreshTokenIdentifier, accountType };
+    const payload = {
+      id,
+      email,
+      refreshTokenIdentifier,
+      accountType,
+      profileId,
+    };
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('REFRESH_TOEKN_TTL')}`,

@@ -52,6 +52,7 @@ export class AuthService {
           newUser.id,
           newUser.email,
           newUser.accountType,
+          newUser.Tourist.id,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -107,6 +108,7 @@ export class AuthService {
           newAgency.id,
           newAgency.email,
           newAgency.accountType,
+          newAgency.Agency.id,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -160,6 +162,7 @@ export class AuthService {
           newEmployee.id,
           newEmployee.email,
           newEmployee.accountType,
+          newEmployee.AgencyEmployee.id,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -216,11 +219,16 @@ export class AuthService {
         throw new UnauthorizedException('Incorrect password');
       }
 
+      const profileId = userExists.Tourist.id
+        ? userExists.Tourist.id
+        : userExists.Agency.id;
+
       const { accessToken, refreshToken, refreshTokenIdentifier } =
         await this.jwtGeneratorService.generateBothTokens(
           userExists.id,
           userExists.email,
           userExists.accountType,
+          profileId,
         );
 
       if (accessToken === undefined || refreshToken === undefined) {
@@ -338,6 +346,7 @@ export class AuthService {
         user.id,
         user.email,
         user.accountType,
+        user.profileId,
       );
 
       // then we hash the new refresh token
