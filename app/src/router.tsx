@@ -60,6 +60,10 @@ const router = createBrowserRouter([
                 path: 'employee',
                 element: <Employee />,
               },
+              {
+                path: `tour-list/:slug`,
+                element: <Destination />,
+              },
             ],
           },
         ],
