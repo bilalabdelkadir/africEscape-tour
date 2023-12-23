@@ -57,17 +57,18 @@ model RefreshTokens {
 }
 
 model Tourist {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   firstName String
   lastName  String
-  email     String   @unique
+  email     String     @unique
   avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Account   Account  @relation(fields: [accountId], references: [id])
-  accountId String   @unique
-  Tour      Tour?    @relation(fields: [tourId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Account   Account    @relation(fields: [accountId], references: [id])
+  accountId String     @unique
+  Tour      Tour?      @relation(fields: [tourId], references: [id])
   tourId    String?
+  Wishlist  Wishlist[]
 
   @@map("tourist")
 }
@@ -189,6 +190,7 @@ model Tour {
   postStatus TourPublishStatus @default(DRAFT)
   status     TourStatus        @default(UPCOMING)
   Tags       Tags[]
+  Wishlist   Wishlist[]
 
   @@map("tours")
 }
@@ -214,4 +216,15 @@ model TourImage {
   tourId    String
 
   @@map("tour_images")
+}
+
+model Wishlist {
+  id     String  @id @default(uuid())
+  user   Tourist @relation(fields: [userId], references: [id])
+  userId String
+  tour   Tour    @relation(fields: [tourId], references: [id])
+  tourId String
+
+  @@unique([userId, tourId])
+  @@map("wishlist")
 }
