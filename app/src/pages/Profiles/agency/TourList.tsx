@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { NavLink } from 'react-router-dom';
+import { Routes } from '@/constants/routes';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -58,7 +59,7 @@ const TourList = () => {
                 Posted At: {moment(tour.createdAt).format('MMMM Do YYYY')}
               </p>
               <NavLink
-                to={`/destination/${tour.slug}`}
+                to={`${Routes.AGENCY_PROFILE}/tour-list/${tour.slug}`}
                 className="uppercase font-semibold font-Jost mt-2 mb-3 text-primary underline "
               >
                 {tour.title}
