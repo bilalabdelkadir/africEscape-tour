@@ -1,4 +1,4 @@
-import { useFetchQuery } from '@/hooks/queryHooks';
+import { useFetchQuery, useMutate } from '@/hooks/queryHooks';
 import useTour from '@/hooks/useTour';
 import { endpoints } from '@/lib/endpoints';
 import { ITour } from '@/types';
@@ -24,19 +24,69 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import moment from 'moment';
 import { user } from '@/global-state/user.globalstate';
+import { effect, signal } from '@preact/signals-react';
 
 const Destination = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { createWishList, deleteWishList } = endpoints;
+  const wishListId = signal<string | undefined>(undefined);
 
   if (!slug) return <div>404</div>;
   const { data: tour, isLoading } = useTour({ slug });
-  const [heart, setHeart] = useState(false);
   const rate = 4.4;
   const reviews = 100;
 
-  useEffect(() => {
-    console.log('this is the data', tour);
-  }, [tour]);
+  const { mutate, isLoading: isCreatingFavourite } = useMutate(
+    createWishList,
+    'POST',
+    (error) => {
+      toast.error(error.response.data.message);
+    },
+    (data) => {
+      toast.success(`successfully added to wishlist`);
+      console.log(data);
+      effect(() => {
+        user.value.Tourist.Wishlist.push(data);
+      });
+      wishListId.value = data.id;
+    }
+  );
+
+  effect(() => {
+    if (user?.value?.id) {
+      const wishList = user.value.Tourist?.Wishlist?.find(
+        (wishlist) => wishlist?.tourId === tour?.id
+      )?.id;
+      wishListId.value = wishList;
+    }
+  });
+
+  const { mutate: deleteMutate, isLoading: isDeletingFavourite } = useMutate(
+    deleteWishList(wishListId.value as string),
+    'DELETE',
+    (error) => {
+      toast.error(error.response.data.message);
+    },
+    () => {
+      toast.success(`successfully deleted from wishlist`);
+      effect(() => {
+        user.value.Tourist.Wishlist = user.value?.Tourist.Wishlist.filter(
+          (wishlist) => wishlist.tourId !== tour?.id
+        );
+      });
+      wishListId.value = undefined;
+    }
+  );
+
+  const handleWishilist = () => {
+    mutate({
+      tourId: tour?.id,
+    });
+  };
+
+  const handleDeleteWishilist = () => {
+    deleteMutate({});
+  };
 
   if (isLoading || tour === null || tour === undefined)
     return (
@@ -89,14 +139,13 @@ const Destination = () => {
               <Heart
                 className={cn(
                   'w-4 h-4 cursor-pointer',
-                  heart ? 'fill-current text-red-500' : 'stroke-current'
+                  wishListId.value
+                    ? 'fill-current text-red-500'
+                    : 'stroke-current'
                 )}
-                onClick={() => {
-                  setHeart(!heart);
-                  toast.success(`
-                  ${!heart ? 'Added to wishlist' : 'Removed from wishlist'}
-                  `);
-                }}
+                onClick={
+                  wishListId.value ? handleDeleteWishilist : handleWishilist
+                }
               />
             )}
           </div>

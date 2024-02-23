@@ -1,12 +1,25 @@
 import { user } from '@/global-state/user.globalstate';
+import { redirect } from 'react-router-dom';
+
+const demouser = {
+  id: 1,
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'dsifn@m',
+  company: {
+    id: 1,
+    name: 'Company1',
+    address: 'address1',
+    phone: '123456789',
+  },
+};
 
 const TouristProfile = () => {
   return (
     <div>
-      <h1>Profile</h1>
-      <p>{user.value?.Tourist.firstName}</p>
-      <p>{user.value?.Tourist.lastName}</p>
-      <p>{user.value?.Tourist.email}</p>
+      {demouser.company ? (
+        <button onClick={() => redirect('/company')}>Company</button>
+      ) : null}
     </div>
   );
 };

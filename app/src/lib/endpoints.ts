@@ -26,4 +26,9 @@ export const endpoints = {
     `${BASE_URL}/employee-invitation/check-invitation/${token}`,
   sendInvitation: `${BASE_URL}/employee-invitation/send-invitation`,
   getAllEmployees: (id: string) => `${BASE_URL}/agency/employees/${id}`,
+
+  // whishlist
+  createWishList: `${BASE_URL}/wishlist`,
+  getWishList: `${BASE_URL}/wishlist/`,
+  deleteWishList: (id: string) => `${BASE_URL}/wishlist/${id}`,
 };

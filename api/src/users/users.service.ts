@@ -18,7 +18,11 @@ export class UsersService {
         updatedAt: true,
         accountType: true,
         isEmailVerified: true,
-        Tourist: true,
+        Tourist: {
+          include: {
+            Wishlist: true,
+          },
+        },
         Agency: true,
       },
     });

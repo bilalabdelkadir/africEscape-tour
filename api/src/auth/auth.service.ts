@@ -21,6 +21,8 @@ import { AgencyService } from 'src/agency/agency.service';
 
 @Injectable()
 export class AuthService {
+  logger = new Logger(AuthService.name);
+
   constructor(
     private readonly Prisma: PrismaService,
     private readonly hashingService: HashingService,
@@ -261,7 +263,7 @@ export class AuthService {
         ...userExists,
       };
     } catch (err) {
-      Logger.error(err);
+      this.logger.error(err);
       throw new HttpException(err.message, err.status);
     }
   }
@@ -317,8 +319,8 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      Logger.log('hased refresh', refreshToken.hashedToken);
-      Logger.log('unhshed', user.refreshToken);
+      this.logger.log('hased refresh', refreshToken.hashedToken);
+      this.logger.log('unhshed', user.refreshToken);
 
       // then we check if the refresh token is valid
       const isValid = await this.hashingService.compareHash(
@@ -370,7 +372,7 @@ export class AuthService {
         refreshToken: newRefreshToken,
       };
     } catch (err) {
-      Logger.error(err);
+      this.logger.error(err);
       throw err;
     }
   }
@@ -405,7 +407,7 @@ export class AuthService {
 
       return userExists;
     } catch (err) {
-      Logger.error(err);
+      this.logger.error(err);
       throw err;
     }
   }

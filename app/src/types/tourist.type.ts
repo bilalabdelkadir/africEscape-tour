@@ -1,4 +1,5 @@
 import { IAgencyProfile } from '.';
+import { IWishlist } from './wishlist.type';
 export interface ITouristProfile {
   id: string;
   firstName: string;
@@ -9,6 +10,7 @@ export interface ITouristProfile {
   avatar: string | null;
   accountType: 'TOURIST' | 'AGENCY' | 'AGENCY_EMPLOYEE';
   isEmailVerified: boolean;
+  Wishlist: IWishlist[];
 }
 
 export interface ITouristAccount {
